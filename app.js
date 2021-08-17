@@ -8,11 +8,12 @@ const cors = require('cors');
 // 環境変数の読み込み
 require('dotenv').config();
 
+// ルーティングの読み込み
 const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
+const followsRouter = require('./routes/follows');
 
 var app = express();
-
 
 app.use(logger('dev'));
 // POST or PUT
@@ -27,10 +28,11 @@ app.use(cors());
 // ルーティング
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
+app.use('/follows', followsRouter);
 
 app.listen(3000, () => {
-  console.log('connected')
-})
+  console.log('connected');
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

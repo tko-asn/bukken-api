@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const secret = requier('../config/secret');
+const secret = require('../config/secret');
 
 const localStrategy = require('../strategies/local-strategy');
 const jwtStrategy = require('../strategies/jwt-strategy');
