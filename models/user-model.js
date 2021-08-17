@@ -1,32 +1,15 @@
-const mysql = require('mysql');
-const dbConf = require('../config/db');
 const bcrypt = require('bcrypt');
 const uuid = require('uuid4');
+const sendQuery = require('../services/send-query');
 
 // テーブル名
 const table = 'user';
 
 userModel = {
-  sendQuery(sql) {
-    // DB接続設定
-    const con = mysql.createConnection(dbConf);
-    // DB接続
-    return new Promise((resolve, reject) => {
-      con.query(sql, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-      // 接続終了
-      con.end();
-    });
-  },
   // ユーザー一覧取得
   list() {
     const sql = `select id, username from ${table};`;
-    return this.sendQuery(sql)
+    return sendQuery(sql)
       .then(result => Promise.resolve(result))
       .catch(err => Promise.reject(err));
   },
@@ -36,7 +19,7 @@ userModel = {
     const sql = `select id, username, self_introduction, icon_url 
     from ${table} where id = '${id}';`;
 
-    return this.sendQuery(sql)
+    return sendQuery(sql)
       // resultはArray型
       .then(result => Promise.resolve(result[0]))
       .catch(err => Promise.reject(err));
@@ -55,7 +38,7 @@ userModel = {
     (id, username, password, email) values 
     ('${id}', '${data.username}', '${hashedPassword}', '${data.email}');`;
 
-    return this.sendQuery(sql)
+    return sendQuery(sql)
       .catch(err => Promise.reject(err));
   },
   // ユーザー情報変更(emailかpasswordのどちらかのみ変更可)
@@ -67,7 +50,7 @@ userModel = {
       // 現在のパスワードを取得
       const get_password_sql = `select password from ${table} where id = '${id}';`;
 
-      await this.sendQuery(get_password_sql)
+      await sendQuery(get_password_sql)
       .then(result => {
           // 現在のパスワードの検証
           if (!bcrypt.compareSync(data.currentPassword, result[0].password)) {
@@ -96,14 +79,14 @@ userModel = {
       return Promise.reject('Invalid current password');
     }
     
-    return this.sendQuery(sql)
+    return sendQuery(sql)
       .catch(err => Promise.reject(err));
   },
   // ユーザー削除
   delete(id) {
     const sql = `delete from ${table} where id = '${id}'`;
 
-    return this.sendQuery(sql)
+    return sendQuery(sql)
       .catch(err => Promise.reject(err));
   },
   // ユーザーのプロフィール編集
@@ -127,7 +110,7 @@ userModel = {
       where id = '${id}';`;
     }
 
-    return this.sendQuery(sql)
+    return sendQuery(sql)
       .then(() => Promise.resolve(req.body)) // 登録したプロフィールの情報を返す
       .catch(err => Promise.reject(err));
   }
