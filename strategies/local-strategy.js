@@ -1,5 +1,5 @@
 const passportLocal = require('passport-local');
-const userModel = require('../models/user-model');
+const sendQuery = require('../services/send-query');
 const bcrypt = require('bcrypt');
 
 // ログイン処理(loginのStrategy)
@@ -15,7 +15,7 @@ const strategy = new LocalStrategy({
   where username = '${username}' or email = '${username}';`
 
   // 合致するデータをDBから取得
-  userModel.sendQuery(sql).then(result => {
+  sendQuery(sql).then(result => {
     const user = result[0];
 
     // パスワードの検証

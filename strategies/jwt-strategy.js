@@ -1,5 +1,5 @@
 const passportJwt = require('passport-jwt');
-const userModel = require('../models/user-model');
+const sendQuery = require('../services/send-query');
 const secret = require('../config/secret');
 
 const JwtStrategy = passportJwt.Strategy;
@@ -16,7 +16,7 @@ const strategy = new JwtStrategy({
 
   const sql = `select * from user where id = '${jwtPayload.id}'`;
 
-  userModel.sendQuery(sql).then(result => {
+  sendQuery(sql).then(result => {
     const user = result[0];
 
     // ユーザーの検証
