@@ -1,4 +1,5 @@
 const sendQuery = require('../services/send-query');
+const uuid = require('uuid4');
 
 const table = 'follows';
 
@@ -23,20 +24,24 @@ const followModel = {
     .catch(err => Promise.reject(err));
   },
   // followデータ作成
-  create(user, follow) {
+  create(data) {
+    // uuidを発行
+    const id = uuid();
+
     const sql = `insert into ${table} 
-    (user, follow) values 
-    ('${JSON.stringify(user)}', '${JSON.stringify(follow)}');`; 
+    (id, user, follow) values 
+    ('${id}', '${JSON.stringify(data.user)}', '${JSON.stringify(data.follow)}');`; 
     // userカラムはフォローする側のユーザーのid, username, iconURLのJSONデータ
     // followカラムはフォローされる側のユーザーのid, username, iconURLのJSONデータ
 
     return sendQuery(sql)
+    .then(() => Promise.resolve({ followId: id })) // uuidを返す
     .catch(err => Promise.reject(err));
   },
   // followデータ削除
   delete(followId) {
     const sql = `delete from ${table} 
-    where id = ${followId}`;
+    where id = '${followId}'`;
     
     return sendQuery(sql)
     .catch(err => Promise.reject(err));

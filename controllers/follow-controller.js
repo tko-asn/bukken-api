@@ -5,11 +5,9 @@ const followController = {
   getMyFollow(req, res) {
     Follows.listFollow(req.params.userId) // userIdは特定のユーザーのID
     .then(result => {
-      // console.log(JSON.parse(result))
       res.json(result);
     })
     .catch(err => {
-      // next(err);
     });
   },
   // 特定のユーザーのフォロワーデータを取得
@@ -25,11 +23,10 @@ const followController = {
   // followデータ作成
   postFollow(req, res) {
     Follows.create(req.body) // id, username, iconURLを持ったデータ
-    .then(() => {
-      res.end();
+    .then(result => {
+      res.json(result);
     })
     .catch(err => {
-      console.log(err)
       next(err);
     });
   },
