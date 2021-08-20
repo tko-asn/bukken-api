@@ -39,7 +39,7 @@ const postModel = {
     const id = uuid();
 
     const sql = `insert into ${table} (id, title, text, author_id) 
-      values ('${id}', '${data.title}', '${data.text}', '${data.author_id}');`;
+      values ('${id}', '${data.title}', '${data.text}', '${data.authorId}');`;
 
     return sendQuery(sql)
       .catch(err => Promise.reject(err));
