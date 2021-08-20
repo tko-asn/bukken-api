@@ -12,6 +12,7 @@ require('dotenv').config();
 const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
 const followsRouter = require('./routes/follows');
+const postsRouter = require('./routes/posts');
 
 var app = express();
 
@@ -29,6 +30,7 @@ app.use(cors());
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/follows', followsRouter);
+app.use('/posts', postsRouter);
 
 app.listen(3000, () => {
   console.log('connected');
