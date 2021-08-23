@@ -47,7 +47,7 @@ const userController = {
       // 現在のパスワードの検証
       if (!bcrypt.compareSync(req.body.currentPassword, user.password)) {
         // エラーメッセージ
-        res.status(400).json({ massage: 'Invalid current password' });
+        res.status(400).json({ message: 'Invalid current password' });
         return;
       }
       // 新しいパスワードをハッシュ化
