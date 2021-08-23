@@ -8,6 +8,9 @@ router.get('/', postController.getPosts, postController.errorHandling);
 // 特定のユーザーの投稿一覧を取得
 router.get('/:userId', postController.getUserPosts, postController.errorHandling);
 
+// フォローしているユーザーたちの投稿一覧を取得
+router.post('/followee', postController.getFolloweePosts, postController.errorHandling);
+
 // 特定の投稿を取得
 router.get('/post/:postId', postController.getPost, postController.errorHandling);
 
