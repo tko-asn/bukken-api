@@ -34,6 +34,22 @@ const postController = {
         next(err);
       });
   },
+  // フォローしているユーザーの投稿を取得
+  getFolloweePosts(req, res, next) {
+    db.post.findAll({
+      where: { authorId: req.body.followsId }, // req.body.followsIdはユーザーのidのリスト
+      order: [
+        ['updatedAt', 'DESC']
+      ],
+      attributes,
+    })
+      .then(posts => {
+        res.json(posts);
+      })
+      .catch(err => {
+        next(err);
+      })
+  },
   // 特定の投稿を取得
   getPost(req, res, next) {
     db.post.findByPk(req.params.postId, { attributes })
