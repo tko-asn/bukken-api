@@ -1,5 +1,5 @@
 const passportJwt = require('passport-jwt');
-const sendQuery = require('../services/send-query');
+const db = require('../models/index');
 const secret = require('../config/secret');
 
 const JwtStrategy = passportJwt.Strategy;
@@ -14,22 +14,16 @@ const strategy = new JwtStrategy({
 }, (jwtPayload, done) => {
   // jwtPayloadはトークンがデコードされたデータ
 
-  const sql = `select * from user where id = '${jwtPayload.id}'`;
-
-  sendQuery(sql).then(result => {
-    const user = result[0];
-
-    // ユーザーの検証
-    if (user) {
-      // passwordはオブジェクトから削除
-      delete user.password;
-      // 成功
-      done(null, user); // emailとpassword以外のカラム(id, username, self_introduction, icon_url)
-    } else {
-      // 失敗
-      done(null, false);
-    };
-  });
+  db.user.findByPk(jwtPayload.id)
+    .then(user => {
+      // ユーザーの検証
+      if (user) {
+        delete user.password; // passwordはオブジェクトから削除
+        done(null, user); // password以外のカラム(id, username, email, self_introduction, icon_url)
+      } else {
+        done(null, false);
+      }
+    });
 });
 
 module.exports = strategy;
