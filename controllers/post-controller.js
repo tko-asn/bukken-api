@@ -1,65 +1,78 @@
-const Posts = require('../models/post-model');
+const db = require('../models/index');
+
+const attributes = ['id', 'title', 'text', 'updatedAt', 'authorId'];
 
 const postController = {
   // 投稿一覧取得
   getPosts(req, res, next) {
-    Posts.list()
-    .then(result => {
-      res.json(result);
+    db.post.findAll({
+      order: [
+        ['updatedAt', 'DESC'], // 投稿日時が遅い順
+      ],
+      attributes,
     })
-    .catch(err => {
-      next(err);
-    });
+      .then(posts => {
+        res.json(posts);
+      })
+      .catch(err => {
+        next(err);
+      });
   },
   // 特定のユーザーの投稿一覧を取得
   getUserPosts(req, res, next) {
-    Posts.listUserPosts(req.params.userId)
-    .then(result => {
-      res.json(result);
+    db.post.findAll({
+      where: { authorId: req.params.userId },
+      order: [
+        ['updatedAt', 'DESC'],
+      ],
+      attributes,
     })
-    .catch(err => {
-      next(err);
-    });
+      .then(posts => {
+        res.json(posts);
+      })
+      .catch(err => {
+        next(err);
+      });
   },
   // 特定の投稿を取得
   getPost(req, res, next) {
-    Posts.retrieve(req.params.postId)
-    .then(result => {
-      res.json(result);
-    })
-    .catch(err => {
-      next(err);
-    });
+    db.post.findByPk(req.params.postId, { attributes })
+      .then(result => {
+        res.json(result);
+      })
+      .catch(err => {
+        next(err);
+      });
   },
   // 投稿を作成
-  postPost(req, res, next) {
-    Posts.create(req.body)
-    .then(() => {
-      res.end();
-    })
-    .catch(err => {
-      next(err);
-    })
+  createPost(req, res, next) {
+    db.post.create(req.body)
+      .then(() => {
+        res.end();
+      })
+      .catch(err => {
+        next(err);
+      })
   },
   // 投稿更新
   updatePost(req, res, next) {
-    Posts.partialUpdate(req.params.postId, req.body)
-    .then(() => {
-      res.end();
-    })
-    .catch(err => {
-      next(err);
-    })
+    db.post.update(req.body, { where: { id: req.params.postId } })
+      .then(() => {
+        res.end();
+      })
+      .catch(err => {
+        next(err);
+      })
   },
   // 投稿削除
   deletePost(req, res, next) {
-    Posts.delete(req.params.postId)
-    .then(() => {
-      res.end();
-    })
-    .catch(err => {
-      next(err);
-    })
+    db.post.destroy({ where: { id: req.params.postId } })
+      .then(() => {
+        res.end();
+      })
+      .catch(err => {
+        next(err);
+      })
   },
   // エラーハンドリング
   errorHandling(err, req, res, next) {
