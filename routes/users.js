@@ -14,8 +14,6 @@ router.patch('/change/:userId', userController.patchUser, userController.errorHa
 // ユーザー削除
 router.delete('/delete/:userId', userController.deleteUser, userController.errorHandling);
 
-// プロフィール取得
-router.get('/profile/:userId', userController.getProfile, userController.errorHandling);
 // プロフィール編集（アイコン画像あり）
 router.patch(
   '/profile/:userId/edit',

@@ -12,7 +12,7 @@ router.get('/:userId', postController.getUserPosts, postController.errorHandling
 router.get('/post/:postId', postController.getPost, postController.errorHandling);
 
 // 投稿を作成
-router.post('/post/new', postController.postPost, postController.errorHandling);
+router.post('/post/new', postController.createPost, postController.errorHandling);
 
 // 投稿を編集
 router.patch('/update/:postId', postController.updatePost, postController.errorHandling);
