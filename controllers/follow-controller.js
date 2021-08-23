@@ -22,7 +22,7 @@ const followController = {
       });
   },
   // 特定のユーザーのフォロワーデータを取得
-  getFollower(req, res) {
+  getFollower(req, res, next) {
     db.follow.findAll({
       where: sequelize.where( // userカラムのidにfollowIdが含まれるデータを取得
         sequelize.fn(
@@ -42,7 +42,7 @@ const followController = {
       });
   },
   // followデータ作成
-  postFollow(req, res) {
+  postFollow(req, res, next) {
     // JSONデータ化
     req.body.user = JSON.stringify(req.body.user);
     req.body.follow = JSON.stringify(req.body.follow);
@@ -56,7 +56,7 @@ const followController = {
       });
   },
   // followデータ削除
-  deleteFollow(req, res) {
+  deleteFollow(req, res, next) {
     db.follow.destroy({ where: { id: req.params.followId } })
       .then(() => {
         res.end();
@@ -64,6 +64,12 @@ const followController = {
       .catch(err => {
         next(err);
       });
+  },
+  // エラーハンドリング
+  errorHandling(err, req, res, next) {
+    if (err) {
+      res.status(500).json({ message: err });
+    }
   }
 };
 
