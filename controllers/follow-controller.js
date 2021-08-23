@@ -5,13 +5,13 @@ const followController = {
   // 特定のユーザーのfollowデータ取得
   getFollow(req, res, next) {
     db.follow.findAll({
-      where: sequelize.where( // userカラムのidにuserIdが含まれるデータを取得
+      where:  // userカラムのidにuserIdが含まれるデータを取得
         sequelize.fn(
           'JSON_CONTAINS',
           sequelize.col('user'),
           sequelize.literal(`'"${req.params.userId}"'`),
           sequelize.literal('"$.id"')
-        )),
+        ),
       attributes: ['id', 'follow'] // カラムはidとfollowを取得
     })
       .then(follows => {
@@ -24,14 +24,13 @@ const followController = {
   // 特定のユーザーのフォロワーデータを取得
   getFollower(req, res, next) {
     db.follow.findAll({
-      where: sequelize.where( // userカラムのidにfollowIdが含まれるデータを取得
+      where:  // userカラムのidにfollowIdが含まれるデータを取得
         sequelize.fn(
           'JSON_CONTAINS',
           sequelize.col('follow'),
           sequelize.literal(`'"${req.params.followId}"'`),
           sequelize.literal('"$.id"')
-        )
-      ),
+        ),
       attributes: ['id', 'user'] // カラムはidとfollowを取得
     })
       .then(followers => {
@@ -43,10 +42,6 @@ const followController = {
   },
   // followデータ作成
   postFollow(req, res, next) {
-    // JSONデータ化
-    req.body.user = JSON.stringify(req.body.user);
-    req.body.follow = JSON.stringify(req.body.follow);
-
     db.follow.create(req.body) // オブジェクト型のuserとfollow
       .then(follow => {
         res.json({ followId: follow.id }); // 作成したデータのIDを返す
