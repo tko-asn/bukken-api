@@ -1,6 +1,7 @@
 const db = require('../models/index');
 
-const attributes = ['id', 'title', 'text', 'updatedAt', 'authorId'];
+const attributes = ['id', 'title', 'text', 'updatedAt'];
+const userAttributes = ['username', 'icon_url']
 
 const postController = {
   // 投稿一覧取得
@@ -10,6 +11,7 @@ const postController = {
         ['updatedAt', 'DESC'], // 投稿日時が遅い順
       ],
       attributes,
+      include: { model: db.user, attributes: userAttributes }
     })
       .then(posts => {
         res.json(posts);
@@ -26,6 +28,7 @@ const postController = {
         ['updatedAt', 'DESC'],
       ],
       attributes,
+      include: { model: db.user, attributes: userAttributes }
     })
       .then(posts => {
         res.json(posts);
@@ -42,6 +45,7 @@ const postController = {
         ['updatedAt', 'DESC']
       ],
       attributes,
+      include: { model: db.user, attributes: userAttributes }
     })
       .then(posts => {
         res.json(posts);
@@ -52,7 +56,10 @@ const postController = {
   },
   // 特定の投稿を取得
   getPost(req, res, next) {
-    db.post.findByPk(req.params.postId, { attributes })
+    db.post.findByPk(req.params.postId, {
+      attributes,
+      include: { model: db.user, attributes: userAttributes }
+    })
       .then(result => {
         res.json(result);
       })
