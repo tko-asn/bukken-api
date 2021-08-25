@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const userpost = require('./userpost');
 module.exports = (sequelize, DataTypes) => {
   class post extends Model {
     /**
@@ -12,7 +13,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       post.belongsTo(models.user, {
-        foreignKey: 'authorId' // authorIdをForeignKeyとする1対多の関係
+        foreignKey: 'authorId', // authorIdをForeignKeyとする1対多の関係
+        onDelete: 'CASCADE'
+      });
+      post.belongsToMany(models.user, {
+        through: models.UserPost, // お気に入りの投稿機能のための多対多の中間テーブル
       });
     }
   };
