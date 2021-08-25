@@ -23,4 +23,14 @@ router.patch('/update/:postId', postController.updatePost, postController.errorH
 // 投稿を削除
 router.delete('/delete/:postId', postController.deletePost, postController.errorHandling);
 
+// お気に入りの投稿を作成
+router.post('/create/favorite', postController.setFavoritePost, postController.errorHandling);
+
+// お気に入りの投稿を削除
+router.delete(
+  '/:postId/remove/favorite/:userId',
+  postController.removeFavoritePost,
+  postController.errorHandling
+);
+
 module.exports = router;
