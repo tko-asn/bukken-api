@@ -26,6 +26,13 @@ router.patch(
   '/profile/:userId/edit/noicon',
   userController.patchProfile, // ユーザー名、自己紹介のみ編集
   userController.errorHandling
-)
+);
+
+// ユーザ―情報＋そのユーザーのお気に入りの投稿
+router.get(
+  '/:userId/with/favorite/posts', 
+  userController.getUserWithFavoritePosts, 
+  userController.errorHandling
+);
 
 module.exports = router;
