@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      user.belongsToMany(models.post, {
+        through: models.UserPost, // 投稿お気に入り機能のための中間テーブル
+        as: 'favoritePosts', // 参照時のフィールド名
+      });
     }
   };
   user.init({

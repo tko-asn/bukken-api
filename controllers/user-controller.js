@@ -1,6 +1,8 @@
 const db = require('../models/index');
 const bcrypt = require('bcrypt');
 
+const favoritePostsAssociation = { model: db.post, as: 'favoritePosts' };
+
 const userController = {
   // ユーザー一覧取得
   getUsers(req, res, next) {
@@ -89,6 +91,16 @@ const userController = {
     db.user.update(params, { where: { id: req.params.userId } })
       .then(() => {
         res.json(params);
+      })
+      .catch(err => {
+        next(err);
+      });
+  },
+  // 特定のユーザーの情報をお気に入りの投稿と一緒に取得
+  getUserWithFavoritePosts(req, res, next) {
+    db.user.findByPk(req.params.userId, { include: [favoritePostsAssociation] })
+      .then(user => {
+        res.json(user);
       })
       .catch(err => {
         next(err);

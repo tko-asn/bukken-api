@@ -2,9 +2,8 @@
 const {
   Model
 } = require('sequelize');
-const userpost = require('./userpost');
 module.exports = (sequelize, DataTypes) => {
-  class post extends Model {
+  class UserPost extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -12,28 +11,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      post.belongsTo(models.user, {
-        foreignKey: 'authorId', // authorIdをForeignKeyとする1対多の関係
-        onDelete: 'CASCADE'
-      });
-      post.belongsToMany(models.user, {
-        through: models.UserPost, // お気に入りの投稿機能のための多対多の中間テーブル
-      });
     }
   };
-  post.init({
+  UserPost.init({
     id: {
       allowNull: false,
       primaryKey: true,
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
     },
-    title: DataTypes.STRING,
-    text: DataTypes.TEXT,
-    authorId: DataTypes.UUID
+    userId: DataTypes.UUID,
+    postId: DataTypes.UUID
   }, {
     sequelize,
-    modelName: 'post',
+    modelName: 'UserPost',
   });
-  return post;
+  return UserPost;
 };
