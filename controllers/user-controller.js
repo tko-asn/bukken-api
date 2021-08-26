@@ -1,7 +1,16 @@
 const db = require('../models/index');
 const bcrypt = require('bcrypt');
 
-const favoritePostsAssociation = { model: db.post, as: 'favoritePosts' };
+const userAttributes = ['id', 'username', 'icon_url'];
+
+const favoritePostsAssociation = { 
+  model: db.post, 
+  as: 'favoritePosts', // お気に入りの投稿一覧のフィールド名
+  include: { // お気に入りの投稿の投稿者の情報も取得
+    model: db.user , 
+    attributes: userAttributes 
+  }, 
+};
 
 const userController = {
   // ユーザー一覧取得
