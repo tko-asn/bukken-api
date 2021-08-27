@@ -99,15 +99,13 @@ const postController = {
   },
   // お気に入りの投稿を作成
   setFavoritePost(req, res, next) {
-    Promise.all([
-      db.user.findByPk(req.body.userId),
-      db.post.findByPk(req.body.postId)
-    ]).then(values => {
-      values[0].setPosts(values[1]);
-      res.end();
-    }).catch(err => {
-      next(err);
-    });
+    db.UserPost.create(req.body)
+      .then(() => {
+        res.end();
+      })
+      .catch(err => {
+        next(err);
+      });
   },
   // お気に入りの投稿を削除
   removeFavoritePost(req, res, next) {
