@@ -15,6 +15,9 @@ module.exports = (sequelize, DataTypes) => {
         through: models.UserPost, // 投稿お気に入り機能のための中間テーブル
         as: 'favoritePosts', // 参照時のフィールド名
       });
+      user.hasMany(models.answer, { // ユーザーの回答
+        foreignKey: 'respondentId',
+      });
     }
   };
   user.init({

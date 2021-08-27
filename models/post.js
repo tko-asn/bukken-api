@@ -19,6 +19,9 @@ module.exports = (sequelize, DataTypes) => {
       post.belongsToMany(models.user, {
         through: models.UserPost, // お気に入りの投稿機能のための多対多の中間テーブル
       });
+      post.hasMany(models.answer, { // 投稿に対する回答
+        foreignKey: 'questionId',
+      });
     }
   };
   post.init({
