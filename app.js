@@ -13,6 +13,7 @@ const authRouter = require('./routes/auth');
 const usersRouter = require('./routes/users');
 const followsRouter = require('./routes/follows');
 const postsRouter = require('./routes/posts');
+const answersRouter = require('./routes/answers');
 
 var app = express();
 
@@ -31,6 +32,7 @@ app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/follows', followsRouter);
 app.use('/posts', postsRouter);
+app.use('/answers', answersRouter);
 
 app.listen(3000, () => {
   console.log('connected');
