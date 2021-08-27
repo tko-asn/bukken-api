@@ -1,7 +1,7 @@
 const db = require('../models/index');
 
 const attributes = ['id', 'title', 'text', 'updatedAt'];
-const userAttributes = ['username', 'icon_url']
+const userAttributes = ['id', 'username', 'icon_url']
 
 const postController = {
   // 投稿一覧取得
