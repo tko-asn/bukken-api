@@ -1,21 +1,24 @@
 const db = require('../models/index');
 const bcrypt = require('bcrypt');
 
-const userAttributes = ['id', 'username', 'icon_url'];
+const userAttributes = ['id', 'username', 'icon_url', 'self_introduction'];
+const postAttributes = ['id', 'title'];
+const answerAttributes = ['id', 'content', 'updatedAt'];
 
-const favoritePostsAssociation = { 
-  model: db.post, 
+
+const favoritePostsAssociation = {
+  model: db.post,
   as: 'favoritePosts', // お気に入りの投稿一覧のフィールド名
   include: { // お気に入りの投稿の投稿者の情報も取得
-    model: db.user , 
-    attributes: userAttributes 
-  }, 
+    model: db.user,
+    attributes: userAttributes
+  },
 };
 
 const userController = {
   // ユーザー一覧取得
   getUsers(req, res, next) {
-    db.user.findAll()
+    db.user.findAll({ attributes: userAttributes })
       .then(users => {
         res.json(users);
       }).catch(err => {
@@ -24,7 +27,20 @@ const userController = {
   },
   // ユーザー詳細取得
   getUser(req, res, next) {
-    db.user.findByPk(req.params.userId)
+    db.user.findByPk(
+      req.params.userId,
+      {
+        attributes: userAttributes,
+        include: {
+          model: db.answer, // ユーザーの回答一覧
+          attributes: answerAttributes,
+          include: {
+            model: db.post, // 回答の対象となる投稿
+            attributes: postAttributes, 
+          }
+        }
+      }
+    )
       .then(user => {
         if (!user) {
           // 存在しない場合は404
@@ -107,7 +123,13 @@ const userController = {
   },
   // 特定のユーザーの情報をお気に入りの投稿と一緒に取得
   getUserWithFavoritePosts(req, res, next) {
-    db.user.findByPk(req.params.userId, { include: [favoritePostsAssociation] })
+    db.user.findByPk(
+      req.params.userId, 
+      { 
+        attributes: userAttributes, 
+        include: [favoritePostsAssociation]
+      }
+    )
       .then(user => {
         res.json(user);
       })
@@ -115,6 +137,7 @@ const userController = {
         next(err);
       });
   },
+  // エラーハンドリング
   errorHandling(err, req, res, next) {
     if (err) {
       res.status(500).json({ message: err });

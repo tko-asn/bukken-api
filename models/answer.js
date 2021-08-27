@@ -2,9 +2,8 @@
 const {
   Model
 } = require('sequelize');
-const userpost = require('./userpost');
 module.exports = (sequelize, DataTypes) => {
-  class post extends Model {
+  class answer extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -12,31 +11,29 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      post.belongsTo(models.user, {
-        foreignKey: 'authorId', // authorIdをForeignKeyとする1対多の関係
+      answer.belongsTo(models.user, { // 回答者
+        foreignKey: 'respondentId',
         onDelete: 'CASCADE'
       });
-      post.belongsToMany(models.user, {
-        through: models.UserPost, // お気に入りの投稿機能のための多対多の中間テーブル
-      });
-      post.hasMany(models.answer, { // 投稿に対する回答
+      answer.belongsTo(models.post, { // 対象となる質問
         foreignKey: 'questionId',
+        onDelete: 'CASCADE',
       });
     }
   };
-  post.init({
+  answer.init({
     id: {
       allowNull: false,
       primaryKey: true,
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
     },
-    title: DataTypes.STRING,
-    text: DataTypes.TEXT,
-    authorId: DataTypes.UUID
+    content: DataTypes.STRING,
+    questionId: DataTypes.STRING,
+    respondentId: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'post',
+    modelName: 'answer',
   });
-  return post;
+  return answer;
 };
