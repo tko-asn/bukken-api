@@ -1,7 +1,8 @@
 const db = require('../models/index');
 
 const attributes = ['id', 'title', 'text', 'updatedAt'];
-const userAttributes = ['id', 'username', 'icon_url']
+const userAttributes = ['id', 'username', 'icon_url'];
+const answerAttributes = ['id', 'content', 'updatedAt'];
 
 const postController = {
   // 投稿一覧取得
@@ -58,7 +59,14 @@ const postController = {
   getPost(req, res, next) {
     db.post.findByPk(req.params.postId, {
       attributes,
-      include: { model: db.user, attributes: userAttributes }
+      include: [
+        { model: db.user, attributes: userAttributes }, // 投稿者
+        { 
+          model: db.answer, // 投稿に対する回答
+          attributes: answerAttributes, 
+          include: { model: db.user, attributes: userAttributes }, // 回答者
+        },
+      ]
     })
       .then(result => {
         res.json(result);
