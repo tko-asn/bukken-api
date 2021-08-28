@@ -31,6 +31,26 @@ const answerController = {
         next(err);
       });
   },
+  // いいねを追加
+  addLikes(req, res, next) {
+    db.UserAnswer.create(req.body)
+      .then(() => {
+        res.end()
+      })
+      .catch(err => {
+        next(err);
+      });
+  },
+  // いいねを解除
+  removeLikes(req, res, next) {
+    db.UserAnswer.destroy(
+      { where: { answerId: req.params.answerId, userId: req.params.userId } 
+    }).then(() => {
+      res.end();
+    }).catch(err => {
+      next(err);
+    });
+  },
   // エラーハンドリング
   errorHandling(err, req, res, next) {
     if (err) {
