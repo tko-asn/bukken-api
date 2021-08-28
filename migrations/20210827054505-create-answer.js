@@ -9,7 +9,8 @@ module.exports = {
         defaultValue: Sequelize.UUID4,
       },
       content: {
-        type: Sequelize.STRING
+        allowNull: false,
+        type: Sequelize.STRING,
       },
       questionId: {
         type: Sequelize.STRING
