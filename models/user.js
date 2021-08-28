@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
       user.hasMany(models.answer, { // ユーザーの回答
         foreignKey: 'respondentId',
       });
+      user.belongsToMany(models.answer, { // いいねした回答
+        through: models.UserAnswer,
+        as: 'likedAnswer',
+      })
     }
   };
   user.init({

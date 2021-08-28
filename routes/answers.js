@@ -23,4 +23,18 @@ router.delete(
   answerController.errorHandling
 );
 
+// いいねを追加
+router.post(
+  '/add/like',
+  answerController.addLikes,
+  answerController.errorHandling,
+);
+
+// いいねを解除
+router.delete(
+  '/remove/like/:answerId/user/:userId',
+  answerController.removeLikes,
+  answerController.errorHandling,
+);
+
 module.exports = router;

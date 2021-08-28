@@ -4,6 +4,12 @@ const attributes = ['id', 'title', 'text', 'updatedAt'];
 const userAttributes = ['id', 'username', 'icon_url'];
 const answerAttributes = ['id', 'content', 'updatedAt'];
 
+const likedAnswerAssociation = { // 投稿にいいねしたユーザーを取得
+  model: db.user,
+  as: 'likedBy',
+  attributes: ['id'],
+};
+
 const postController = {
   // 投稿一覧取得
   getPosts(req, res, next) {
@@ -64,7 +70,10 @@ const postController = {
         { 
           model: db.answer, // 投稿に対する回答
           attributes: answerAttributes, 
-          include: { model: db.user, attributes: userAttributes }, // 回答者
+          include: [
+            { model: db.user, attributes: userAttributes }, // 回答者
+            likedAnswerAssociation, // いいねしたユーザー
+          ], 
         },
       ]
     })

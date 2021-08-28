@@ -13,11 +13,15 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       answer.belongsTo(models.user, { // 回答者
         foreignKey: 'respondentId',
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
       });
       answer.belongsTo(models.post, { // 対象となる質問
         foreignKey: 'questionId',
         onDelete: 'CASCADE',
+      });
+      answer.belongsToMany(models.user, { // いいねしたユーザー
+        through: models.UserAnswer,
+        as: 'likedBy',
       });
     }
   };
@@ -28,9 +32,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
     },
-    content: DataTypes.STRING,
+    content: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     questionId: DataTypes.STRING,
-    respondentId: DataTypes.STRING
+    respondentId: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'answer',
