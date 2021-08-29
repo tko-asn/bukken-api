@@ -10,6 +10,8 @@ const likedAnswerAssociation = { // 投稿にいいねしたユーザーを取�
   attributes: ['id'],
 };
 
+const perPage = 10; // 1ページ当たりの投稿数
+
 const postController = {
   // 投稿一覧取得
   getPosts(req, res, next) {
@@ -26,6 +28,23 @@ const postController = {
       .catch(err => {
         next(err);
       });
+  },
+  // 特定数の投稿を取得
+  getPostsByPagination(req, res, next) {
+    const page = req.params.page;
+    db.post.findAndCountAll({
+      offset: (page - 1) * perPage,
+      limit: perPage,
+      order: [
+        ['updatedAt', 'DESC'], // 投稿日時が遅い順
+      ],
+      attributes,
+      include: { model: db.user, attributes: userAttributes }
+    }).then(result => {
+      res.json(result.rows);
+    }).catch(err => {
+      next(err);
+    });
   },
   // 特定のユーザーの投稿一覧を取得
   getUserPosts(req, res, next) {
