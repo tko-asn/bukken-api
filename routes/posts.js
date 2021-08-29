@@ -7,7 +7,7 @@ router.get('/', postController.getPosts, postController.errorHandling);
 
 // 特定数の投稿を取得
 router.get(
-  '/:page', 
+  '/page/:page', 
   postController.getPostsByPagination, 
   postController.errorHandling
 );
