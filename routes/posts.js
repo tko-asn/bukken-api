@@ -5,6 +5,13 @@ const postController = require('../controllers/post-controller');
 // 投稿一覧を取得
 router.get('/', postController.getPosts, postController.errorHandling);
 
+// 特定数の投稿を取得
+router.get(
+  '/:page', 
+  postController.getPostsByPagination, 
+  postController.errorHandling
+);
+
 // 特定のユーザーの投稿一覧を取得
 router.get('/:userId', postController.getUserPosts, postController.errorHandling);
 
