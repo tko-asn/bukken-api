@@ -22,6 +22,9 @@ module.exports = (sequelize, DataTypes) => {
       post.hasMany(models.answer, { // 投稿に対する回答
         foreignKey: 'questionId',
       });
+      post.belongsTo(models.address, { // 住所
+        foreignKey: 'addressId',
+      });
     }
   };
   post.init({
@@ -33,7 +36,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     title: DataTypes.STRING,
     text: DataTypes.TEXT,
-    authorId: DataTypes.UUID
+    authorId: DataTypes.UUID,
+    addressId: DataTypes.STRING, // 住所の外部キー
   }, {
     sequelize,
     modelName: 'post',
