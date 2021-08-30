@@ -2,9 +2,6 @@ const express = require('express');
 const router = express.Router();
 const postController = require('../controllers/post-controller');
 
-// 投稿一覧を取得
-router.get('/', postController.getPosts, postController.errorHandling);
-
 // 特定数の投稿を取得
 router.get(
   '/page/:page', 
