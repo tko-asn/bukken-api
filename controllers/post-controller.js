@@ -3,6 +3,13 @@ const db = require('../models/index');
 const attributes = ['id', 'title', 'text', 'updatedAt'];
 const userAttributes = ['id', 'username', 'icon_url'];
 const answerAttributes = ['id', 'content', 'updatedAt'];
+const addressAttributes = [
+  'postalCode',
+  'prefecture',
+  'municipality',
+  'townName',
+  'buildingName'
+];
 
 const likedAnswerAssociation = { // 投稿にいいねしたユーザーを取得
   model: db.user,
@@ -13,22 +20,6 @@ const likedAnswerAssociation = { // 投稿にいいねしたユーザーを取�
 const perPage = 10; // 1ページ当たりの投稿数
 
 const postController = {
-  // 投稿一覧取得
-  getPosts(req, res, next) {
-    db.post.findAll({
-      order: [
-        ['updatedAt', 'DESC'], // 投稿日時が遅い順
-      ],
-      attributes,
-      include: { model: db.user, attributes: userAttributes }
-    })
-      .then(posts => {
-        res.json(posts);
-      })
-      .catch(err => {
-        next(err);
-      });
-  },
   // 特定数の投稿を取得
   getPostsByPagination(req, res, next) {
     const page = req.params.page;
@@ -39,7 +30,10 @@ const postController = {
         ['updatedAt', 'DESC'], // 投稿日時が遅い順
       ],
       attributes,
-      include: { model: db.user, attributes: userAttributes }
+      include: [
+        { model: db.user, attributes: userAttributes },
+        { model: db.address, attributes: addressAttributes } // 住所
+      ]
     }).then(result => {
       res.json(result.rows);
     }).catch(err => {
@@ -54,7 +48,10 @@ const postController = {
         ['updatedAt', 'DESC'],
       ],
       attributes,
-      include: { model: db.user, attributes: userAttributes }
+      include: [
+        { model: db.user, attributes: userAttributes },
+        { model: db.address, attributes: addressAttributes } // 住所
+      ]
     })
       .then(posts => {
         res.json(posts);
@@ -71,28 +68,35 @@ const postController = {
         ['updatedAt', 'DESC']
       ],
       attributes,
-      include: { model: db.user, attributes: userAttributes }
+      include: [
+        { model: db.user, attributes: userAttributes },
+        { model: db.address, attributes: addressAttributes } // 住所
+      ]
     })
-      .then(posts => {
+    .then(posts => {
         res.json(posts);
       })
       .catch(err => {
         next(err);
       })
-  },
-  // 特定の投稿を取得
-  getPost(req, res, next) {
+    },
+    // 特定の投稿を取得
+    getPost(req, res, next) {
     db.post.findByPk(req.params.postId, {
       attributes,
       include: [
         { model: db.user, attributes: userAttributes }, // 投稿者
-        { 
+        { model: db.address, attributes: addressAttributes }, // 住所
+        {
           model: db.answer, // 投稿に対する回答
           attributes: answerAttributes, 
+          order: [
+            ['updatedAt', 'DESC']
+          ],
           include: [
             { model: db.user, attributes: userAttributes }, // 回答者
             likedAnswerAssociation, // いいねしたユーザー
-          ], 
+          ],
         },
       ]
     })
