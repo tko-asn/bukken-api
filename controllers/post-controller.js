@@ -1,6 +1,6 @@
 const db = require('../models/index');
 
-const attributes = ['id', 'title', 'text', 'updatedAt'];
+const attributes = ['id', 'title', 'property', 'text', 'updatedAt'];
 const userAttributes = ['id', 'username', 'icon_url'];
 const answerAttributes = ['id', 'content', 'updatedAt'];
 const addressAttributes = [

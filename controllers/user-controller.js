@@ -2,7 +2,7 @@ const db = require('../models/index');
 const bcrypt = require('bcrypt');
 
 const userAttributes = ['id', 'username', 'icon_url', 'self_introduction'];
-const postAttributes = ['id', 'title'];
+const postAttributes = ['id', 'title', 'property'];
 const answerAttributes = ['id', 'content', 'updatedAt'];
 
 
