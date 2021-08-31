@@ -35,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
     },
     title: DataTypes.STRING,
+    property: DataTypes.STRING,
     text: DataTypes.TEXT,
     authorId: DataTypes.UUID,
     addressId: DataTypes.STRING, // 住所の外部キー
