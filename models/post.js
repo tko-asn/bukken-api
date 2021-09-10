@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE'
       });
       post.belongsToMany(models.user, {
+        as: 'favoritePosts', // お気に入りの投稿を扱うときに使用するエイリアス
         through: models.UserPost, // お気に入りの投稿機能のための多対多の中間テーブル
       });
       post.hasMany(models.answer, { // 投稿に対する回答
@@ -24,6 +25,9 @@ module.exports = (sequelize, DataTypes) => {
       });
       post.belongsTo(models.address, { // 住所
         foreignKey: 'addressId',
+      });
+      post.belongsToMany(models.category, { // カテゴリ
+        through: 'PostCategory',
       });
     }
   };
