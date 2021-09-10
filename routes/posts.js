@@ -4,8 +4,8 @@ const postController = require('../controllers/post-controller');
 
 // 特定数の投稿を取得
 router.get(
-  '/page/:page', 
-  postController.getPostsByPagination, 
+  '/page/:page',
+  postController.getPostsByPagination,
   postController.errorHandling
 );
 
@@ -36,5 +36,32 @@ router.delete(
   postController.removeFavoritePost,
   postController.errorHandling
 );
+
+// 投稿にカテゴリーをセット
+router.post(
+  '/set/category',
+  postController.setCategory,
+  postController.errorHandling,
+);
+
+// 投稿からカテゴリーを外す
+router.delete(
+  '/:postId/remove/category/:categoryId',
+  postController.removeCategory,
+  postController.errorHandling,
+);
+
+// 投稿検索
+router.get(
+  '/filter/page/:page',
+  postController.filterPosts,
+  postController.errorHandling,
+);
+
+
+router.get(
+  '/favorite/user/:userId/page/:page',
+  postController.getFavoritePosts
+)
 
 module.exports = router;
