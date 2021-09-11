@@ -235,7 +235,6 @@ const postController = {
       ],
       include: [
         userAssociation, // 投稿者
-        addressAssociation, // 住所
       ]
     };
 
@@ -246,6 +245,19 @@ const postController = {
         secondCategory: { [Op.in]: req.query.categories }, // 第二カテゴリーの配列 
       };
       filterOptions.include.push(ca); // カテゴリーでの絞り込みの設定を追加
+    }
+
+    // 地域
+    if (req.query.address) {
+      const aa = { ...addressAssociation }; // 投稿と住所との関係をコピー
+      aa.where = {
+        postalCode: req.query.address, // 郵便番号で絞り込み
+      }
+      filterOptions.include.push(aa); // 住所での絞り込みの設定を追加
+
+      // 住所のクエリパラメータが存在しない場合
+    } else {
+      filterOptions.include.push(addressAssociation); // 通常の関係をセット
     }
 
     // お気に入りの投稿表示中の絞り込み
