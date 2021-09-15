@@ -54,7 +54,7 @@ const perPage = 10; // 1ページ当たりの投稿数
 
 const postController = {
   // 特定数の投稿を取得
-  getPostsByPagination(req, res, next) {
+  getPosts(req, res, next) {
     const page = req.params.page;
     db.post.findAndCountAll({
       offset: (page - 1) * perPage,
@@ -67,16 +67,21 @@ const postController = {
         userAssociation,
         categoryAssociation, // カテゴリー
         addressAssociation, // 住所
-      ]
+      ],
+      distinct: true
     }).then(result => {
-      res.json(result.rows);
+      const total = (result.count > 0) ? Math.ceil(result.count / perPage) : 1; // 総ページ数を取得
+      res.json({ total, posts: result.rows });
     }).catch(err => {
       next(err);
     });
   },
   // 特定のユーザーの投稿一覧を取得
   getUserPosts(req, res, next) {
-    db.post.findAll({
+    const page = req.params.page;
+    db.post.findAndCountAll({
+      offset: (page - 1) * perPage,
+      limit: perPage,
       where: { authorId: req.params.userId },
       order: [
         ['updatedAt', 'DESC'],
@@ -86,10 +91,12 @@ const postController = {
         userAssociation,
         addressAssociation, // 住所
         categoryAssociation // カテゴリー
-      ]
+      ],
+      distinct: true
     })
-      .then(posts => {
-        res.json(posts);
+      .then(result => {
+        const total = (result.count > 0) ? Math.ceil(result.count / perPage) : 1; // 総ページ数を取得
+        res.json({ total, posts: result.rows });
       })
       .catch(err => {
         next(err);
@@ -97,7 +104,10 @@ const postController = {
   },
   // フォローしているユーザーの投稿を取得
   getFolloweePosts(req, res, next) {
-    db.post.findAll({
+    const page = req.params.page;
+    db.post.findAndCountAll({
+      offset: (page - 1) * perPage,
+      limit: perPage,
       where: { authorId: req.body.followsId }, // req.body.followsIdはユーザーのidのリスト
       order: [
         ['updatedAt', 'DESC']
@@ -107,14 +117,39 @@ const postController = {
         userAssociation,
         addressAssociation, // 住所
         categoryAssociation // カテゴリー
-      ]
+      ],
+      distinct: true
     })
-      .then(posts => {
-        res.json(posts);
+      .then(result => {
+        const total = (result.count > 0) ? Math.ceil(result.count / perPage) : 1; // 総ページ数を取得
+        res.json({ total, posts: result.rows });
       })
       .catch(err => {
         next(err);
       })
+  },
+  // ユーザーのお気に入りの投稿を取得
+  getFavoritePosts(req, res, next) {
+    const fpa = { ...favoritePostsAssociation };
+    fpa.where = { id: req.params.userId };
+    const page = req.params.page;
+    db.post.findAndCountAll({
+      offset: (page - 1) * perPage,
+      limit: perPage,
+      attributes,
+      include: [
+        fpa, // お気に入りの投稿を取得するため
+        userAssociation, // 投稿者の情報を取得
+        addressAssociation,
+        categoryAssociation
+      ],
+      distinct: true
+    }).then(result => {
+      const total = (result.count > 0) ? Math.ceil(result.count / perPage) : 1; // 総ページ数を取得
+      res.json({ total, posts: result.rows });
+    }).catch(err => {
+      next(err);
+    });
   },
   // 特定の投稿を取得
   getPost(req, res, next) {
@@ -235,7 +270,8 @@ const postController = {
       ],
       include: [
         userAssociation, // 投稿者
-      ]
+      ],
+      distinct: true
     };
 
     // カテゴリー
@@ -275,32 +311,12 @@ const postController = {
 
     db.post.findAndCountAll(filterOptions)
       .then(result => {
-        res.json(result.rows);
+        const total = (result.count > 0) ? Math.ceil(result.count / perPage) : 1; // 総ページ数を取得
+        res.json({ total, posts: result.rows });
       })
       .catch(err => {
         next(err);
       });
-  },
-  // ユーザーのお気に入りの投稿を取得
-  getFavoritePosts(req, res, next) {
-    const fpa = { ...favoritePostsAssociation };
-    fpa.where = { id: req.params.userId };
-    const page = req.params.page;
-    db.post.findAndCountAll({
-      offset: (page - 1) * perPage,
-      limit: perPage,
-      attributes,
-      include: [
-        fpa, // お気に入りの投稿を取得するため
-        userAssociation, // 投稿者の情報を取得
-        addressAssociation,
-        categoryAssociation
-      ]
-    }).then(result => {
-      res.json(result.rows);
-    }).catch(err => {
-      next(err);
-    });
   },
   // エラーハンドリング
   errorHandling(err, req, res, next) {
