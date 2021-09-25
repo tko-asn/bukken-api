@@ -79,13 +79,19 @@ router.delete(
   postController.errorHandling,
 );
 
-// 投稿検索
+// 投稿フィルタリング
 router.get(
-  '/filter/page/:page',
+  '/filter/query/page/:page',
   postController.filterPosts,
   postController.errorHandling,
 );
 
+// 投稿キーワード検索
+router.get(
+  '/search/query/page/:page',
+  postController.searchPosts,
+  postController.errorHandling,
+)
 
 router.get(
   '/favorite/user/:userId/page/:page',
