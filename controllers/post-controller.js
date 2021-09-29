@@ -56,9 +56,7 @@ const postController = {
       .findAndCountAll({
         offset: (page - 1) * perPage,
         limit: perPage,
-        order: [
-          ["updatedAt", "DESC"], // 投稿日時が遅い順
-        ],
+        order: [["updatedAt", "DESC"]],
         attributes,
         include: [
           userAssociation,
@@ -170,6 +168,7 @@ const postController = {
           },
           categoryAssociation,
         ],
+        order: [[db.answer, "updatedAt", "ASC"]],
       })
       .then((result) => {
         res.json(result);
@@ -271,9 +270,7 @@ const postController = {
       offset: (page - 1) * perPage,
       limit: perPage,
       attributes,
-      order: [
-        ["updatedAt", "DESC"], // 投稿日時が遅い順
-      ],
+      order: [["updatedAt", "DESC"]],
       include: [
         userAssociation, // 投稿者
       ],
