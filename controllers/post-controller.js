@@ -46,7 +46,7 @@ const favoritePostsAssociation = {
   as: "favoritePosts",
 };
 
-const perPage = 1; // 1ページ当たりの投稿数
+const perPage = 10; // 1ページ当たりの投稿数
 
 const postController = {
   // 特定数の投稿を取得
