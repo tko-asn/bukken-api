@@ -1,25 +1,26 @@
-const db = require('../models/index');
-const bcrypt = require('bcrypt');
+const db = require("../models/index");
+const bcrypt = require("bcrypt");
 
-const userAttributes = ['id', 'username', 'icon_url', 'self_introduction'];
-const postAttributes = ['id', 'title', 'property'];
-const answerAttributes = ['id', 'content', 'updatedAt'];
+const userAttributes = ["id", "username", "icon_url", "self_introduction"];
+const postAttributes = ["id", "title", "property"];
+const answerAttributes = ["id", "content", "updatedAt"];
 
 const userController = {
   // ユーザー一覧取得
   getUsers(req, res, next) {
-    db.user.findAll({ attributes: userAttributes })
-      .then(users => {
+    db.user
+      .findAll({ attributes: userAttributes })
+      .then((users) => {
         res.json(users);
-      }).catch(err => {
+      })
+      .catch((err) => {
         next(err);
       });
   },
   // ユーザー詳細取得
   getUser(req, res, next) {
-    db.user.findByPk(
-      req.params.userId,
-      {
+    db.user
+      .findByPk(req.params.userId, {
         attributes: userAttributes,
         include: {
           model: db.answer, // ユーザーの回答一覧
@@ -27,18 +28,18 @@ const userController = {
           include: {
             model: db.post, // 回答の対象となる投稿
             attributes: postAttributes,
-          }
-        }
-      }
-    )
-      .then(user => {
+          },
+        },
+      })
+      .then((user) => {
         if (!user) {
           // 存在しない場合は404
-          res.status(404).json({ massage: 'Not found' });
+          res.status(404).json({ massage: "Not found" });
         } else {
           res.json(user);
         }
-      }).catch(err => {
+      })
+      .catch((err) => {
         next(err);
       });
   },
@@ -47,24 +48,28 @@ const userController = {
     req.body.password = bcrypt.hashSync(req.body.password, 10);
 
     // req.bodyはpostデータ
-    db.user.create(req.body)
+    db.user
+      .create(req.body)
       .then(() => {
         res.end();
-      }).catch(err => {
+      })
+      .catch((err) => {
         next(err);
       });
   },
   // ユーザー情報変更(Email or password)
   async patchUser(req, res, next) {
     // ユーザーの情報を取得
-    const user = await db.user.findByPk(req.params.userId).catch(err => next(err));
+    const user = await db.user
+      .findByPk(req.params.userId)
+      .catch((err) => next(err));
 
     // パスワードの場合
     if (req.body.newPassword) {
       // 現在のパスワードの検証
       if (!bcrypt.compareSync(req.body.currentPassword, user.password)) {
         // エラーメッセージ
-        res.status(400).json({ message: 'Invalid current password' });
+        res.status(400).json({ message: "Invalid current password" });
         return;
       }
       // 新しいパスワードをハッシュ化
@@ -76,47 +81,56 @@ const userController = {
     }
 
     // 保存
-    user.save();
-
-    res.end()
+    await user.save().catch(err => {
+      next(err);
+    });
+    
+    res.end();
   },
   // ユーザー削除
   deleteUser(req, res, next) {
-    db.user.destroy({ where: { id: req.params.userId } })
+    db.user
+      .destroy({ where: { id: req.params.userId } })
       .then(() => {
         res.end();
       })
-      .catch(err => {
+      .catch((err) => {
         next(err);
-      })
+      });
   },
   // ユーザーのプロフィールのカラムを編集
   patchProfile(req, res, next) {
     // iconFileもreq.bodyに含まれるかもしれないのでparamsに必要な情報のみ追加
     const params = {
       username: req.body.username,
-      self_introduction: req.body.self_introduction
-    }
+      self_introduction: req.body.self_introduction,
+    };
 
     // 画像に変更があった場合
     if (req.body.icon_url) {
       params.icon_url = req.body.icon_url;
     }
 
-    db.user.update(params, { where: { id: req.params.userId } })
+    db.user
+      .update(params, { where: { id: req.params.userId } })
       .then(() => {
         res.json(params);
       })
-      .catch(err => {
+      .catch((err) => {
         next(err);
       });
   },
   // エラーハンドリング
   errorHandling(err, req, res, next) {
-    if (err) {
+    // 重複エラー(username or email)
+    if (err.original.errno === 1062) {
+      res
+        .status(500)
+        .json({ message: "Duplicate", fields: Object.keys(err.fields) });
+    } else {
       res.status(500).json({ message: err });
     }
-  }
+  },
 };
 
 module.exports = userController;
