@@ -39,10 +39,19 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
     },
     title: DataTypes.STRING,
-    property: DataTypes.STRING,
+    property: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     text: DataTypes.TEXT,
-    authorId: DataTypes.UUID,
-    addressId: DataTypes.STRING, // 住所の外部キー
+    authorId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    addressId: { // 住所の外部キー
+      type: DataTypes.STRING,
+      allowNull: false,
+    }, 
   }, {
     sequelize,
     modelName: 'post',

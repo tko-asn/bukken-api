@@ -20,8 +20,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
     },
-    user: DataTypes.JSON,
-    follow: DataTypes.JSON
+    user: {
+      type: DataTypes.JSON,
+      allowNull: false,
+    },
+    follow: {
+      type: DataTypes.JSON,
+      allowNull: false,
+    }
   }, {
     sequelize,
     modelName: 'follow',
