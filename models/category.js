@@ -23,7 +23,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
     },
-    firstCategory: DataTypes.STRING,
+    firstCategory: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     secondCategory: DataTypes.STRING
   }, {
     sequelize,

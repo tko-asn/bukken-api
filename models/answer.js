@@ -36,8 +36,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    questionId: DataTypes.STRING,
-    respondentId: DataTypes.STRING,
+    questionId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    respondentId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
   }, {
     sequelize,
     modelName: 'answer',
