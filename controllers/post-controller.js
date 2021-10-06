@@ -56,7 +56,10 @@ const postController = {
       .findAndCountAll({
         offset: (page - 1) * perPage,
         limit: perPage,
-        order: [["updatedAt", "DESC"]],
+        order: [
+          ["updatedAt", "DESC"],
+          [db.category, "updatedAt", "ASC"],
+        ],
         attributes,
         include: [
           userAssociation,
@@ -81,7 +84,10 @@ const postController = {
         offset: (page - 1) * perPage,
         limit: perPage,
         where: { authorId: req.params.userId },
-        order: [["updatedAt", "DESC"]],
+        order: [
+          ["updatedAt", "DESC"],
+          [db.category, "updatedAt", "ASC"],
+        ],
         attributes,
         include: [
           userAssociation,
@@ -106,7 +112,10 @@ const postController = {
         offset: (page - 1) * perPage,
         limit: perPage,
         where: { authorId: req.body.followsId }, // req.body.followsIdはユーザーのidのリスト
-        order: [["updatedAt", "DESC"]],
+        order: [
+          ["updatedAt", "DESC"],
+          [db.category, "updatedAt", "ASC"],
+        ],
         attributes,
         include: [
           userAssociation,
@@ -139,7 +148,10 @@ const postController = {
           addressAssociation,
           categoryAssociation,
         ],
-        order: [["updatedAt", "DESC"]],
+        order: [
+          ["updatedAt", "DESC"],
+          [db.category, "updatedAt", "ASC"],
+        ],
         distinct: true,
       })
       .then((result) => {
@@ -168,10 +180,17 @@ const postController = {
           },
           categoryAssociation,
         ],
-        order: [[db.answer, "updatedAt", "ASC"]],
+        order: [
+          [db.answer, "updatedAt", "ASC"],
+          [db.category, "updatedAt", "ASC"],
+        ],
       })
       .then((result) => {
-        res.json(result);
+        if (!result) {
+          res.status(404).json({ message: "Not found" });
+        } else {
+          res.json(result);
+        }
       })
       .catch((err) => {
         next(err);
@@ -182,7 +201,7 @@ const postController = {
     db.post
       .create(req.body)
       .then((post) => {
-        res.json({ id: post.id }); // カテゴリ登録時に使用するID
+        res.status(201).json({ id: post.id }); // カテゴリ登録時に使用するID
       })
       .catch((err) => {
         next(err);
@@ -214,7 +233,7 @@ const postController = {
   setFavoritePost(req, res, next) {
     db.UserPost.create(req.body)
       .then(() => {
-        res.end();
+        res.status(201).end();
       })
       .catch((err) => {
         next(err);
@@ -239,7 +258,7 @@ const postController = {
   setCategory(req, res, next) {
     db.PostCategory.create(req.body)
       .then(() => {
-        res.end();
+        res.status(201).end();
       })
       .catch((err) => {
         next(err);
@@ -380,7 +399,6 @@ const postController = {
   // エラーハンドリング
   errorHandling(err, req, res, next) {
     if (err) {
-      console.log(err);
       res.status(500).json({ message: err });
     }
   },
