@@ -9,7 +9,10 @@ const userController = {
   // ユーザー一覧取得
   getUsers(req, res, next) {
     db.user
-      .findAll({ attributes: userAttributes })
+      .findAll({
+        attributes: userAttributes,
+        order: [["updatedAt", "DESC"]],
+      })
       .then((users) => {
         res.json(users);
       })
@@ -30,11 +33,12 @@ const userController = {
             attributes: postAttributes,
           },
         },
+        order: [[db.answer, "updatedAt", "DESC"]],
       })
       .then((user) => {
         if (!user) {
           // 存在しない場合は404
-          res.status(404).json({ massage: "Not found" });
+          res.status(404).json({ message: "Not found" });
         } else {
           res.json(user);
         }
@@ -51,7 +55,7 @@ const userController = {
     db.user
       .create(req.body)
       .then(() => {
-        res.end();
+        res.status(201).end();
       })
       .catch((err) => {
         next(err);
@@ -81,10 +85,10 @@ const userController = {
     }
 
     // 保存
-    await user.save().catch(err => {
+    await user.save().catch((err) => {
       next(err);
     });
-    
+
     res.end();
   },
   // ユーザー削除
