@@ -1,13 +1,12 @@
 const passportJwt = require('passport-jwt');
 const db = require('../models/index');
-const secret = require('../config/secret');
 
 const JwtStrategy = passportJwt.Strategy;
 const ExtractJwt = passportJwt.ExtractJwt;
 
 const strategy = new JwtStrategy({
   // jsonwebtokenのsign()の第二引数と同じ値
-  secretOrKey: secret,
+  secretOrKey: process.env.secret,
   // bearerトークンとして認証
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   // 以下検証処理

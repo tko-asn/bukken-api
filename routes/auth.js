@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
-const secret = require("../config/secret");
 
 const localStrategy = require("../strategies/local-strategy");
 const jwtStrategy = require("../strategies/jwt-strategy");
@@ -21,9 +20,13 @@ router.post(
     const user = req.user; // authenticate()でセットされたユーザー情報
 
     // ユーザー情報(id, usernameのみ)をもとにトークンを作成
-    const token = jwt.sign({ id: user.id, username: user.username }, secret, {
-      expiresIn: "30m",
-    });
+    const token = jwt.sign(
+      { id: user.id, username: user.username },
+      process.env.secret,
+      {
+        expiresIn: "30m",
+      }
+    );
 
     res.json({
       token,
