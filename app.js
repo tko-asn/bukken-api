@@ -5,8 +5,10 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const cors = require("cors");
 
-// 環境変数の読み込み
-require("dotenv").config();
+// 開発環境の場合ファイルから環境変数を読み込む
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 // ルーティングの読み込み
 const authRouter = require("./routes/auth");
