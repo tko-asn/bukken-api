@@ -5,12 +5,13 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
-let config = {};
-if (env !== "production") {
-  config = require(__dirname + '/../config/config.json')[env];
-} else {
-  config = process.env;
-}
+// let config = {};
+// if (env !== "production") {
+//   config = require(__dirname + '/../config/config.json')[env];
+// } else {
+//   config = process.env;
+// }
+const config = process.env;
 const db = {};
 
 let sequelize;
