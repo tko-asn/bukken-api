@@ -1,13 +1,13 @@
 const request = require("supertest");
 const server = require("../../app");
 const db = require("../../models/index");
-const bcrypt = require("bcrypt");
+const bcryptjs = require("bcryptjs");
 
 const userData = {
   id: "userId1",
   username: "user1",
   email: "email1",
-  password: bcrypt.hashSync("passwd1", 10),
+  password: bcryptjs.hashSync("passwd1", 10),
   icon_url: "userIcon1",
   self_introduction: "selfIntroduction1",
 };

@@ -1,7 +1,7 @@
 const request = require("supertest");
 const server = require("../../app");
 const db = require("../../models/index");
-const bcrypt = require("bcrypt");
+const bcryptjs = require("bcryptjs");
 
 const userData = [
   {
@@ -161,7 +161,7 @@ describe("userAPIのテスト", () => {
         expect(actualUserData.username).toBe(params.username);
         expect(actualUserData.email).toBe(params.email);
         expect(
-          bcrypt.compareSync(params.password, actualUserData.password)
+          bcryptjs.compareSync(params.password, actualUserData.password)
         ).toBe(true);
       });
     });
@@ -193,7 +193,7 @@ describe("userAPIのテスト", () => {
 
         const actualUserData = await db.user.findByPk("newUserId");
         expect(
-          bcrypt.compareSync(params.newPassword, actualUserData.password)
+          bcryptjs.compareSync(params.newPassword, actualUserData.password)
         ).toBe(true);
       });
     });
