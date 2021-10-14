@@ -1,0 +1,29 @@
+{
+  "development": {
+    "username": "dev_admin",
+    "password": "dev_admin_pass",
+    "database": "yobo_development",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "test_admin",
+    "password": "test_admin_pass",
+    "database": "yobo_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "dialect": "mysql",
+    "use_env_variable": "DATABASE_URL",
+    "dialectOptions": {
+      "ssl": {
+        "require": true,
+        "rejectUnauthorized": false
+      }
+    }
+  }
+}
