@@ -1,4 +1,3 @@
-const { expectation } = require("sinon");
 const request = require("supertest");
 const server = require("../../app");
 const db = require("../../models/index");

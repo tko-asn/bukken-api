@@ -1,5 +1,5 @@
 const db = require("../models/index");
-const bcrypt = require("bcrypt");
+const bcryptjs = require("bcryptjs");
 
 const userAttributes = ["id", "username", "icon_url", "self_introduction"];
 const postAttributes = ["id", "title", "property"];
@@ -49,7 +49,7 @@ const userController = {
   },
   // ユーザー作成
   postUser(req, res, next) {
-    req.body.password = bcrypt.hashSync(req.body.password, 10);
+    req.body.password = bcryptjs.hashSync(req.body.password, 10);
 
     // req.bodyはpostデータ
     db.user
@@ -71,13 +71,13 @@ const userController = {
     // パスワードの場合
     if (req.body.newPassword) {
       // 現在のパスワードの検証
-      if (!bcrypt.compareSync(req.body.currentPassword, user.password)) {
+      if (!bcryptjs.compareSync(req.body.currentPassword, user.password)) {
         // エラーメッセージ
         res.status(400).json({ message: "Invalid current password" });
         return;
       }
       // 新しいパスワードをハッシュ化
-      user.password = bcrypt.hashSync(req.body.newPassword, 10);
+      user.password = bcryptjs.hashSync(req.body.newPassword, 10);
 
       // Emailの場合
     } else {
