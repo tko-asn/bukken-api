@@ -1,35 +1,28 @@
 const passportJwt = require('passport-jwt');
-const userModel = require('../models/user-model');
-const secret = require('../config/secret');
+const db = require('../models/index');
 
 const JwtStrategy = passportJwt.Strategy;
 const ExtractJwt = passportJwt.ExtractJwt;
 
 const strategy = new JwtStrategy({
   // jsonwebtokenのsign()の第二引数と同じ値
-  secretOrKey: secret,
+  secretOrKey: process.env.secret,
   // bearerトークンとして認証
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   // 以下検証処理
 }, (jwtPayload, done) => {
   // jwtPayloadはトークンがデコードされたデータ
 
-  const sql = `select * from user where id = '${jwtPayload.id}'`;
-
-  userModel.sendQuery(sql).then(result => {
-    const user = result[0];
-
-    // ユーザーの検証
-    if (user) {
-      // passwordはオブジェクトから削除
-      delete user.password;
-      // 成功
-      done(null, user); // emailとpassword以外のカラム(id, username, self_introduction, icon_url)
-    } else {
-      // 失敗
-      done(null, false);
-    };
-  });
+  db.user.findByPk(jwtPayload.id)
+    .then(user => {
+      // ユーザーの検証
+      if (user) {
+        delete user.password; // passwordはオブジェクトから削除
+        done(null, user); // password以外のカラム(id, username, email, self_introduction, icon_url)
+      } else {
+        done(null, false);
+      }
+    });
 });
 
 module.exports = strategy;
