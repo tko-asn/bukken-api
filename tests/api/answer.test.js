@@ -82,6 +82,19 @@ describe("answerAPIのテスト", () => {
         expect(answerData[0].respondentId).toBe("userId1");
       });
     });
+    describe("異常系", () => {
+      it("ユーザーが同じ投稿に2度目の回答をした場合に403エラーが発生する", async () => {
+        const params = {
+          content: "createAnswerErrorVer",
+          questionId: "post1",
+          respondentId: "userId1",
+        };
+        const response = await request(server)
+          .post("/answers/create")
+          .send(params);
+        expect(response.status).toBe(403);
+      });
+    });
   });
 
   describe("PATCH /answers/update/:answerId のテスト", () => {
