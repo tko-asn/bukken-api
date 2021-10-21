@@ -2,15 +2,27 @@ const db = require("../models/index");
 
 const answerController = {
   // 回答作成
-  createAnswer(req, res, next) {
-    db.answer
-      .create(req.body)
-      .then(() => {
-        res.status(201).end();
-      })
-      .catch((err) => {
-        next(err);
-      });
+  async createAnswer(req, res, next) {
+    // ユーザーが既に投稿に回答しているか確認
+    const result = await db.answer.findAll({
+      where: {
+        respondentId: req.body.respondentId,
+        questionId: req.body.questionId,
+      },
+    });
+
+    if (result.length) {
+      res.status(403).end();
+    } else {
+      db.answer
+        .create(req.body)
+        .then(() => {
+          res.status(201).end();
+        })
+        .catch((err) => {
+          next(err);
+        });
+    }
   },
   // 回答更新
   updateAnswer(req, res, next) {
