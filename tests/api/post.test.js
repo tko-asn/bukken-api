@@ -12,6 +12,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 1, 1, 0, 0, 0),
+    createdAt: new Date(2020, 1, 1, 0, 0, 0),
   },
   {
     id: "postId2",
@@ -21,6 +22,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 2, 1, 0, 0, 0),
+    createdAt: new Date(2020, 2, 1, 0, 0, 0),
   },
   {
     id: "postId3",
@@ -30,6 +32,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 3, 1, 0, 0, 0),
+    createdAt: new Date(2020, 3, 1, 0, 0, 0),
   },
   {
     id: "postId4",
@@ -39,6 +42,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 4, 1, 0, 0, 0),
+    createdAt: new Date(2020, 4, 1, 0, 0, 0),
   },
   {
     id: "postId5",
@@ -48,6 +52,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 5, 1, 0, 0, 0),
+    createdAt: new Date(2020, 5, 1, 0, 0, 0),
   },
   {
     id: "postId6",
@@ -57,6 +62,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 6, 1, 0, 0, 0),
+    createdAt: new Date(2020, 6, 1, 0, 0, 0),
   },
   {
     id: "postId7",
@@ -66,6 +72,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 7, 1, 0, 0, 0),
+    createdAt: new Date(2020, 7, 1, 0, 0, 0),
   },
   {
     id: "postId8",
@@ -75,6 +82,7 @@ const postData = [
     authorId: "userId2",
     addressId: "addressId2",
     updatedAt: new Date(2021, 8, 1, 0, 0, 0),
+    createdAt: new Date(2020, 8, 1, 0, 0, 0),
   },
   {
     id: "postId9",
@@ -84,6 +92,7 @@ const postData = [
     authorId: "userId2",
     addressId: "addressId2",
     updatedAt: new Date(2021, 9, 1, 0, 0, 0),
+    createdAt: new Date(2020, 9, 1, 0, 0, 0),
   },
   {
     id: "postId10",
@@ -93,6 +102,7 @@ const postData = [
     authorId: "userId2",
     addressId: "addressId2",
     updatedAt: new Date(2021, 10, 1, 0, 0, 0),
+    createdAt: new Date(2020, 10, 1, 0, 0, 0),
   },
   {
     id: "postId11",
@@ -102,6 +112,7 @@ const postData = [
     authorId: "userId2",
     addressId: "addressId2",
     updatedAt: new Date(2021, 11, 1, 0, 0, 0),
+    createdAt: new Date(2020, 11, 1, 0, 0, 0),
   },
   {
     id: "postId12",
@@ -111,6 +122,7 @@ const postData = [
     authorId: "userId2",
     addressId: "addressId2",
     updatedAt: new Date(2021, 12, 1, 0, 0, 0),
+    createdAt: new Date(2020, 12, 1, 0, 0, 0),
   },
 ];
 const addressData = [
@@ -523,7 +535,8 @@ describe("postAPIのテスト", () => {
   describe("GET /posts/post/:postId", () => {
     describe("正常系", () => {
       it("投稿のカラムが取得できている", async () => {
-        const expectedDateTime = new Date(2021, 12, 1, 0, 0, 0);
+        const expectedUpdatedAt = new Date(2021, 12, 1, 0, 0, 0);
+        const expectedCreatedAt = new Date(2020, 12, 1, 0, 0, 0);
         const response = await request(server).get("/posts/post/postId12");
 
         expect(response.statusCode).toBe(200);
@@ -531,7 +544,8 @@ describe("postAPIのテスト", () => {
         expect(response.body.title).toBe("test-post12");
         expect(response.body.property).toBe("test-property12");
         expect(response.body.text).toBe("text12");
-        expect(response.body.updatedAt).toBe(expectedDateTime.toISOString());
+        expect(response.body.updatedAt).toBe(expectedUpdatedAt.toISOString());
+        expect(response.body.createdAt).toBe(expectedCreatedAt.toISOString());
       });
       it("投稿者のデータを一緒に取得できる", async () => {
         const response = await request(server).get("/posts/post/postId12");
