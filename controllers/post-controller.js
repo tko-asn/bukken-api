@@ -2,7 +2,14 @@ const db = require("../models/index");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
-const attributes = ["id", "title", "property", "text", "updatedAt"];
+const attributes = [
+  "id",
+  "title",
+  "property",
+  "text",
+  "updatedAt",
+  "createdAt",
+];
 const userAttributes = ["id", "username", "icon_url"];
 const answerAttributes = ["id", "content", "updatedAt"];
 const addressAttributes = [
