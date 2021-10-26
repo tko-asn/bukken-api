@@ -778,16 +778,16 @@ describe("postAPIのテスト", () => {
     });
   });
 
-  describe("DELETE /posts/:postId/remove/category/:categoryId", () => {
+  describe("DELETE /posts/remove/categories のテスト", () => {
     describe("正常系", () => {
       it("投稿からカテゴリーを正常に削除できる", async () => {
         const response = await request(server).delete(
-          "/posts/postId1/remove/category/categoryId1"
+          "/posts/postId1/remove/categories"
         );
         expect(response.statusCode).toBe(200);
 
         const postCategoryData = await db.PostCategory.findAll({
-          where: { postId: "postId1", categoryId: "categoryId1" },
+          where: { postId: "postId1" },
         });
         expect(postCategoryData).toHaveLength(0);
       });
