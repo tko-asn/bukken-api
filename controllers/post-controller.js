@@ -19,7 +19,7 @@ const addressAttributes = [
   "townName",
   "buildingName",
 ];
-const categoryAttributes = ["firstCategory", "secondCategory"];
+const categoryAttributes = ["id", "firstCategory", "secondCategory"];
 
 const userAssociation = {
   // 投稿者または回答者
@@ -276,7 +276,6 @@ const postController = {
     db.PostCategory.destroy({
       where: {
         postId: req.params.postId,
-        categoryId: req.params.categoryId,
       },
     })
       .then(() => {
