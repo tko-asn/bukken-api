@@ -20,8 +20,8 @@ describe("categoryAPIのテスト", () => {
     describe("正常系", () => {
       it("カテゴリーが既に存在している場合そのカテゴリーのidのリストを取得できる", async () => {
         const params = [
-          { first: "firstCategory1", second: "secondCategory1" },
-          { first: "firstCategory2", second: "secondCategory2" },
+          { firstCategory: "firstCategory1", secondCategory: "secondCategory1" },
+          { firstCategory: "firstCategory2", secondCategory: "secondCategory2" },
         ];
 
         const response = await request(server)
@@ -40,8 +40,8 @@ describe("categoryAPIのテスト", () => {
       });
       it("カテゴリーが存在しない場合新しく作成して、そのidのリストを取得できる", async () => {
         const params = [
-          { first: "firstCategory1", second: "secondCategory2" },
-          { first: "firstCategory2", second: "secondCategory1" },
+          { firstCategory: "firstCategory1", secondCategory: "secondCategory2" },
+          { firstCategory: "firstCategory2", secondCategory: "secondCategory1" },
         ];
         const response = await request(server)
           .post("/categories/find/or/create")
