@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class answer extends Model {
     /**
@@ -11,42 +9,52 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      answer.belongsTo(models.user, { // 回答者
-        foreignKey: 'respondentId',
-        onDelete: 'CASCADE',
+      answer.belongsTo(models.user, {
+        // 回答者
+        foreignKey: "respondentId",
+        onDelete: "CASCADE",
       });
-      answer.belongsTo(models.post, { // 対象となる質問
-        foreignKey: 'questionId',
-        onDelete: 'CASCADE',
+      answer.belongsTo(models.post, {
+        // 対象となる質問
+        foreignKey: "questionId",
+        onDelete: "CASCADE",
       });
-      answer.belongsToMany(models.user, { // いいねしたユーザー
+      answer.belongsToMany(models.user, {
+        // いいねしたユーザー
         through: models.UserAnswer,
-        as: 'likedBy',
+        as: "likedBy",
+      });
+      answer.hasMany(models.comment, {
+        // 回答についたコメント
+        foreignKey: "answerId",
       });
     }
-  };
-  answer.init({
-    id: {
-      allowNull: false,
-      primaryKey: true,
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+  }
+  answer.init(
+    {
+      id: {
+        allowNull: false,
+        primaryKey: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      content: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      questionId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
+      respondentId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+      },
     },
-    content: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    questionId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-    },
-    respondentId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-    },
-  }, {
-    sequelize,
-    modelName: 'answer',
-  });
+    {
+      sequelize,
+      modelName: "answer",
+    }
+  );
   return answer;
 };
