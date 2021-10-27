@@ -53,6 +53,23 @@ describe("commentAPIのテスト", () => {
     });
   });
 
+  describe("PATCH /comments/update/:commentId のテスト", () => {
+    describe("正常系", () => {
+      it("コメントを正常に編集できる", async () => {
+        const params = { content: "updatedComment1" };
+        const response = await request(server)
+          .patch("/comments/update/commentId1")
+          .send(params);
+        expect(response.statusCode).toBe(200);
+
+        const commentData = await db.comment.findAll();
+        expect(commentData).toHaveLength(1);
+        expect(commentData[0].id).toBe("commentId1");
+        expect(commentData[0].content).toBe("updatedComment1");
+      });
+    });
+  });
+
   describe("DELETE /comments/delete/:commentId のテスト", () => {
     describe("正常系", () => {
       it("コメントを正常に削除できる", async () => {
