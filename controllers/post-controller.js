@@ -20,6 +20,7 @@ const addressAttributes = [
   "buildingName",
 ];
 const categoryAttributes = ["id", "firstCategory", "secondCategory"];
+const commentAttributes = ["id", "content"];
 
 const userAssociation = {
   // 投稿者または回答者
@@ -51,6 +52,13 @@ const favoritePostsAssociation = {
   model: db.user,
   attributes: [], // 自分の情報は無し
   as: "favoritePosts",
+};
+
+const commentAssociation = {
+  // コメントを取得
+  model: db.comment,
+  attributes: commentAttributes,
+  include: { ...userAssociation },
 };
 
 const perPage = 10; // 1ページ当たりの投稿数
@@ -183,14 +191,17 @@ const postController = {
             include: [
               { ...userAssociation }, // 回答者（コピーしたものを使わないとエラー発生）
               likedAnswerAssociation, // いいねしたユーザー
+              commentAssociation, // 回答についたコメント
             ],
           },
           categoryAssociation,
         ],
         order: [
           [db.answer, "updatedAt", "ASC"],
+          [db.answer, db.comment, "createdAt", "ASC"],
           [db.category, "updatedAt", "ASC"],
         ],
+        subQuery: false, // answerのcommentのため
       })
       .then((result) => {
         if (!result) {
