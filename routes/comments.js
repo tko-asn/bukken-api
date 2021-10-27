@@ -9,6 +9,13 @@ router.post(
   commentController.errorHandling
 );
 
+// コメント編集
+router.patch(
+  "/update/:commentId",
+  commentController.updateComment,
+  commentController.errorHandling
+);
+
 // コメント削除
 router.delete(
   "/delete/:commentId",
