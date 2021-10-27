@@ -12,6 +12,17 @@ const commentController = {
         next(err);
       });
   },
+  // コメント編集
+  updateComment(req, res, next) {
+    db.comment
+      .update(req.body, { where: { id: req.params.commentId } })
+      .then(() => {
+        res.end();
+      })
+      .catch((err) => {
+        next(err);
+      });
+  },
   // コメント削除
   deleteComment(req, res, next) {
     db.comment
