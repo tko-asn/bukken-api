@@ -234,6 +234,29 @@ const userPostData = [
     postId: "postId12",
   },
 ];
+const commentData = [
+  {
+    id: "commentId1",
+    content: "comment1",
+    answerId: "answerId1",
+    authorId: "userId2",
+    createdAt: new Date(2021, 12, 11, 0, 0, 0),
+  },
+  {
+    id: "commentId2",
+    content: "comment2",
+    answerId: "answerId1",
+    authorId: "userId1",
+    createdAt: new Date(2021, 12, 12, 0, 0, 0),
+  },
+  {
+    id: "commentId3",
+    content: "comment3",
+    answerId: "answerId1",
+    authorId: "userId1",
+    createdAt: new Date(2021, 12, 10, 0, 0, 0),
+  },
+];
 
 describe("postAPIのテスト", () => {
   beforeAll(async () => {
@@ -246,10 +269,12 @@ describe("postAPIのテスト", () => {
     await db.answer.bulkCreate(answerData);
     await db.UserAnswer.bulkCreate(userAnswerData);
     await db.UserPost.bulkCreate(userPostData);
+    await db.comment.bulkCreate(commentData);
   });
 
   afterAll(async () => {
     const option = { where: {} };
+    await db.comment.destroy(option);
     await db.post.destroy(option);
     await db.address.destroy(option);
     await db.user.destroy(option);
@@ -600,6 +625,46 @@ describe("postAPIのテスト", () => {
 
         expect(response.body.answers[0].likedBy[0].id).toBe("userId2");
         expect(response.body.answers[1].likedBy[0].id).toBe("userId2");
+      });
+      it("回答についたコメントをcreatedAtの昇順に取得できる", async () => {
+        const response = await request(server).get("/posts/post/postId12");
+
+        expect(response.body.answers[0].comments[0].id).toBe("commentId3");
+        expect(response.body.answers[0].comments[0].content).toBe("comment3");
+        expect(response.body.answers[0].comments[1].id).toBe("commentId1");
+        expect(response.body.answers[0].comments[1].content).toBe("comment1");
+        expect(response.body.answers[0].comments[2].id).toBe("commentId2");
+        expect(response.body.answers[0].comments[2].content).toBe("comment2");
+      });
+      it("回答に付いたコメントからコメントの作成者のデータを取得できる", async () => {
+        const response = await request(server).get("/posts/post/postId12");
+
+        // コメント1件目
+        expect(response.body.answers[0].comments[0].user.id).toBe("userId1");
+        expect(response.body.answers[0].comments[0].user.username).toBe(
+          "user1"
+        );
+        expect(response.body.answers[0].comments[0].user.icon_url).toBe(
+          "userIcon1"
+        );
+
+        // コメント2件目
+        expect(response.body.answers[0].comments[1].user.id).toBe("userId2");
+        expect(response.body.answers[0].comments[1].user.username).toBe(
+          "user2"
+        );
+        expect(response.body.answers[0].comments[1].user.icon_url).toBe(
+          "userIcon2"
+        );
+
+        // コメント3件目
+        expect(response.body.answers[0].comments[2].user.id).toBe("userId1");
+        expect(response.body.answers[0].comments[2].user.username).toBe(
+          "user1"
+        );
+        expect(response.body.answers[0].comments[2].user.icon_url).toBe(
+          "userIcon1"
+        );
       });
     });
     describe("異常系", () => {
