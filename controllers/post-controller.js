@@ -197,7 +197,7 @@ const postController = {
           categoryAssociation,
         ],
         order: [
-          [db.answer, "updatedAt", "ASC"],
+          [db.answer, "createdAt", "ASC"],
           [db.answer, db.comment, "createdAt", "ASC"],
           [db.category, "updatedAt", "ASC"],
         ],
