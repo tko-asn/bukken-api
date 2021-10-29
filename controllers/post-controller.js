@@ -11,7 +11,7 @@ const attributes = [
   "createdAt",
 ];
 const userAttributes = ["id", "username", "icon_url"];
-const answerAttributes = ["id", "content", "updatedAt"];
+const answerAttributes = ["id", "content", "createdAt", "updatedAt"];
 const addressAttributes = [
   "postalCode",
   "prefecture",
@@ -20,7 +20,7 @@ const addressAttributes = [
   "buildingName",
 ];
 const categoryAttributes = ["id", "firstCategory", "secondCategory"];
-const commentAttributes = ["id", "content"];
+const commentAttributes = ["id", "content", "createdAt", "updatedAt"];
 
 const userAssociation = {
   // 投稿者または回答者
@@ -72,7 +72,7 @@ const postController = {
         offset: (page - 1) * perPage,
         limit: perPage,
         order: [
-          ["updatedAt", "DESC"],
+          ["createdAt", "DESC"],
           [db.category, "updatedAt", "ASC"],
         ],
         attributes,
@@ -100,7 +100,7 @@ const postController = {
         limit: perPage,
         where: { authorId: req.params.userId },
         order: [
-          ["updatedAt", "DESC"],
+          ["createdAt", "DESC"],
           [db.category, "updatedAt", "ASC"],
         ],
         attributes,
@@ -128,7 +128,7 @@ const postController = {
         limit: perPage,
         where: { authorId: req.body.followsId }, // req.body.followsIdはユーザーのidのリスト
         order: [
-          ["updatedAt", "DESC"],
+          ["createdAt", "DESC"],
           [db.category, "updatedAt", "ASC"],
         ],
         attributes,
@@ -164,7 +164,7 @@ const postController = {
           categoryAssociation,
         ],
         order: [
-          ["updatedAt", "DESC"],
+          ["createdAt", "DESC"],
           [db.category, "updatedAt", "ASC"],
         ],
         distinct: true,
@@ -306,7 +306,7 @@ const postController = {
       offset: (page - 1) * perPage,
       limit: perPage,
       attributes,
-      order: [["updatedAt", "DESC"]],
+      order: [["createdAt", "DESC"]],
       include: [
         userAssociation, // 投稿者
       ],
@@ -369,7 +369,7 @@ const postController = {
       limit: perPage,
       attributes,
       order: [
-        ["updatedAt", "DESC"], // 投稿日時が遅い順
+        ["createdAt", "DESC"], // 投稿日時が遅い順
       ],
       include: [
         userAssociation, // 投稿者
