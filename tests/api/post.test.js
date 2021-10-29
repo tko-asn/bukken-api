@@ -205,6 +205,7 @@ const answerData = [
     questionId: "postId12",
     respondentId: "userId1",
     updatedAt: new Date(2021, 12, 10, 0, 0, 0),
+    createdAt: new Date(2020, 12, 10, 0, 0, 0),
   },
   {
     id: "answerId2",
@@ -212,6 +213,7 @@ const answerData = [
     questionId: "postId12",
     respondentId: "userId1",
     updatedAt: new Date(2021, 12, 11, 0, 0, 0),
+    createdAt: new Date(2020, 12, 11, 0, 0, 0),
   },
 ];
 const userAnswerData = [
@@ -315,7 +317,7 @@ describe("postAPIのテスト", () => {
         const response = await request(server).get("/posts/page/1");
         expect(response.body.total).toBe(2);
       });
-      it("投稿がupdatedAtの降順でソートされている", async () => {
+      it("投稿がcreatedAtの降順でソートされている", async () => {
         const [firstResponse, secondResponse] = await Promise.all([
           request(server).get("/posts/page/1"),
           request(server).get("/posts/page/2"),
@@ -596,21 +598,21 @@ describe("postAPIのテスト", () => {
         expect(response.body.categories[1].firstCategory).toBe("test-fc2");
         expect(response.body.categories[1].secondCategory).toBe("test-sc2");
       });
-      it("投稿についた回答をupdatedAtの昇順で取得できる", async () => {
+      it("投稿についた回答をcreatedAtの昇順で取得できる", async () => {
         const response = await request(server).get("/posts/post/postId12");
-        const answer1UpdatedAt = new Date(2021, 12, 10, 0, 0, 0);
-        const answer2UpdatedAt = new Date(2021, 12, 11, 0, 0, 0);
+        const answer1CreatedAt = new Date(2020, 12, 10, 0, 0, 0);
+        const answer2CreatedAt = new Date(2020, 12, 11, 0, 0, 0);
 
         expect(response.body.answers).toHaveLength(2);
         expect(response.body.answers[0].id).toBe("answerId1");
         expect(response.body.answers[0].content).toBe("answer1");
-        expect(response.body.answers[0].updatedAt).toBe(
-          answer1UpdatedAt.toISOString()
+        expect(response.body.answers[0].createdAt).toBe(
+          answer1CreatedAt.toISOString()
         );
         expect(response.body.answers[1].id).toBe("answerId2");
         expect(response.body.answers[1].content).toBe("answer2");
-        expect(response.body.answers[1].updatedAt).toBe(
-          answer2UpdatedAt.toISOString()
+        expect(response.body.answers[1].createdAt).toBe(
+          answer2CreatedAt.toISOString()
         );
       });
       it("投稿についた回答の回答者の情報を取得できる", async () => {
