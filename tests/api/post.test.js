@@ -12,6 +12,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 1, 1, 0, 0, 0),
+    createdAt: new Date(2020, 1, 1, 0, 0, 0),
   },
   {
     id: "postId2",
@@ -21,6 +22,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 2, 1, 0, 0, 0),
+    createdAt: new Date(2020, 2, 1, 0, 0, 0),
   },
   {
     id: "postId3",
@@ -30,6 +32,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 3, 1, 0, 0, 0),
+    createdAt: new Date(2020, 3, 1, 0, 0, 0),
   },
   {
     id: "postId4",
@@ -39,6 +42,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 4, 1, 0, 0, 0),
+    createdAt: new Date(2020, 4, 1, 0, 0, 0),
   },
   {
     id: "postId5",
@@ -48,6 +52,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 5, 1, 0, 0, 0),
+    createdAt: new Date(2020, 5, 1, 0, 0, 0),
   },
   {
     id: "postId6",
@@ -57,6 +62,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 6, 1, 0, 0, 0),
+    createdAt: new Date(2020, 6, 1, 0, 0, 0),
   },
   {
     id: "postId7",
@@ -66,6 +72,7 @@ const postData = [
     authorId: "userId1",
     addressId: "addressId1",
     updatedAt: new Date(2021, 7, 1, 0, 0, 0),
+    createdAt: new Date(2020, 7, 1, 0, 0, 0),
   },
   {
     id: "postId8",
@@ -75,6 +82,7 @@ const postData = [
     authorId: "userId2",
     addressId: "addressId2",
     updatedAt: new Date(2021, 8, 1, 0, 0, 0),
+    createdAt: new Date(2020, 8, 1, 0, 0, 0),
   },
   {
     id: "postId9",
@@ -84,6 +92,7 @@ const postData = [
     authorId: "userId2",
     addressId: "addressId2",
     updatedAt: new Date(2021, 9, 1, 0, 0, 0),
+    createdAt: new Date(2020, 9, 1, 0, 0, 0),
   },
   {
     id: "postId10",
@@ -93,6 +102,7 @@ const postData = [
     authorId: "userId2",
     addressId: "addressId2",
     updatedAt: new Date(2021, 10, 1, 0, 0, 0),
+    createdAt: new Date(2020, 10, 1, 0, 0, 0),
   },
   {
     id: "postId11",
@@ -102,6 +112,7 @@ const postData = [
     authorId: "userId2",
     addressId: "addressId2",
     updatedAt: new Date(2021, 11, 1, 0, 0, 0),
+    createdAt: new Date(2020, 11, 1, 0, 0, 0),
   },
   {
     id: "postId12",
@@ -111,6 +122,7 @@ const postData = [
     authorId: "userId2",
     addressId: "addressId2",
     updatedAt: new Date(2021, 12, 1, 0, 0, 0),
+    createdAt: new Date(2020, 12, 1, 0, 0, 0),
   },
 ];
 const addressData = [
@@ -193,6 +205,7 @@ const answerData = [
     questionId: "postId12",
     respondentId: "userId1",
     updatedAt: new Date(2021, 12, 10, 0, 0, 0),
+    createdAt: new Date(2020, 12, 10, 0, 0, 0),
   },
   {
     id: "answerId2",
@@ -200,6 +213,7 @@ const answerData = [
     questionId: "postId12",
     respondentId: "userId1",
     updatedAt: new Date(2021, 12, 11, 0, 0, 0),
+    createdAt: new Date(2020, 12, 11, 0, 0, 0),
   },
 ];
 const userAnswerData = [
@@ -222,6 +236,29 @@ const userPostData = [
     postId: "postId12",
   },
 ];
+const commentData = [
+  {
+    id: "commentId1",
+    content: "comment1",
+    answerId: "answerId1",
+    authorId: "userId2",
+    createdAt: new Date(2021, 12, 11, 0, 0, 0),
+  },
+  {
+    id: "commentId2",
+    content: "comment2",
+    answerId: "answerId1",
+    authorId: "userId1",
+    createdAt: new Date(2021, 12, 12, 0, 0, 0),
+  },
+  {
+    id: "commentId3",
+    content: "comment3",
+    answerId: "answerId1",
+    authorId: "userId1",
+    createdAt: new Date(2021, 12, 10, 0, 0, 0),
+  },
+];
 
 describe("postAPIのテスト", () => {
   beforeAll(async () => {
@@ -234,10 +271,12 @@ describe("postAPIのテスト", () => {
     await db.answer.bulkCreate(answerData);
     await db.UserAnswer.bulkCreate(userAnswerData);
     await db.UserPost.bulkCreate(userPostData);
+    await db.comment.bulkCreate(commentData);
   });
 
   afterAll(async () => {
     const option = { where: {} };
+    await db.comment.destroy(option);
     await db.post.destroy(option);
     await db.address.destroy(option);
     await db.user.destroy(option);
@@ -278,7 +317,7 @@ describe("postAPIのテスト", () => {
         const response = await request(server).get("/posts/page/1");
         expect(response.body.total).toBe(2);
       });
-      it("投稿がupdatedAtの降順でソートされている", async () => {
+      it("投稿がcreatedAtの降順でソートされている", async () => {
         const [firstResponse, secondResponse] = await Promise.all([
           request(server).get("/posts/page/1"),
           request(server).get("/posts/page/2"),
@@ -523,7 +562,8 @@ describe("postAPIのテスト", () => {
   describe("GET /posts/post/:postId", () => {
     describe("正常系", () => {
       it("投稿のカラムが取得できている", async () => {
-        const expectedDateTime = new Date(2021, 12, 1, 0, 0, 0);
+        const expectedUpdatedAt = new Date(2021, 12, 1, 0, 0, 0);
+        const expectedCreatedAt = new Date(2020, 12, 1, 0, 0, 0);
         const response = await request(server).get("/posts/post/postId12");
 
         expect(response.statusCode).toBe(200);
@@ -531,7 +571,8 @@ describe("postAPIのテスト", () => {
         expect(response.body.title).toBe("test-post12");
         expect(response.body.property).toBe("test-property12");
         expect(response.body.text).toBe("text12");
-        expect(response.body.updatedAt).toBe(expectedDateTime.toISOString());
+        expect(response.body.updatedAt).toBe(expectedUpdatedAt.toISOString());
+        expect(response.body.createdAt).toBe(expectedCreatedAt.toISOString());
       });
       it("投稿者のデータを一緒に取得できる", async () => {
         const response = await request(server).get("/posts/post/postId12");
@@ -557,21 +598,21 @@ describe("postAPIのテスト", () => {
         expect(response.body.categories[1].firstCategory).toBe("test-fc2");
         expect(response.body.categories[1].secondCategory).toBe("test-sc2");
       });
-      it("投稿についた回答をupdatedAtの昇順で取得できる", async () => {
+      it("投稿についた回答をcreatedAtの昇順で取得できる", async () => {
         const response = await request(server).get("/posts/post/postId12");
-        const answer1UpdatedAt = new Date(2021, 12, 10, 0, 0, 0);
-        const answer2UpdatedAt = new Date(2021, 12, 11, 0, 0, 0);
+        const answer1CreatedAt = new Date(2020, 12, 10, 0, 0, 0);
+        const answer2CreatedAt = new Date(2020, 12, 11, 0, 0, 0);
 
         expect(response.body.answers).toHaveLength(2);
         expect(response.body.answers[0].id).toBe("answerId1");
         expect(response.body.answers[0].content).toBe("answer1");
-        expect(response.body.answers[0].updatedAt).toBe(
-          answer1UpdatedAt.toISOString()
+        expect(response.body.answers[0].createdAt).toBe(
+          answer1CreatedAt.toISOString()
         );
         expect(response.body.answers[1].id).toBe("answerId2");
         expect(response.body.answers[1].content).toBe("answer2");
-        expect(response.body.answers[1].updatedAt).toBe(
-          answer2UpdatedAt.toISOString()
+        expect(response.body.answers[1].createdAt).toBe(
+          answer2CreatedAt.toISOString()
         );
       });
       it("投稿についた回答の回答者の情報を取得できる", async () => {
@@ -586,6 +627,46 @@ describe("postAPIのテスト", () => {
 
         expect(response.body.answers[0].likedBy[0].id).toBe("userId2");
         expect(response.body.answers[1].likedBy[0].id).toBe("userId2");
+      });
+      it("回答についたコメントをcreatedAtの昇順に取得できる", async () => {
+        const response = await request(server).get("/posts/post/postId12");
+
+        expect(response.body.answers[0].comments[0].id).toBe("commentId3");
+        expect(response.body.answers[0].comments[0].content).toBe("comment3");
+        expect(response.body.answers[0].comments[1].id).toBe("commentId1");
+        expect(response.body.answers[0].comments[1].content).toBe("comment1");
+        expect(response.body.answers[0].comments[2].id).toBe("commentId2");
+        expect(response.body.answers[0].comments[2].content).toBe("comment2");
+      });
+      it("回答に付いたコメントからコメントの作成者のデータを取得できる", async () => {
+        const response = await request(server).get("/posts/post/postId12");
+
+        // コメント1件目
+        expect(response.body.answers[0].comments[0].user.id).toBe("userId1");
+        expect(response.body.answers[0].comments[0].user.username).toBe(
+          "user1"
+        );
+        expect(response.body.answers[0].comments[0].user.icon_url).toBe(
+          "userIcon1"
+        );
+
+        // コメント2件目
+        expect(response.body.answers[0].comments[1].user.id).toBe("userId2");
+        expect(response.body.answers[0].comments[1].user.username).toBe(
+          "user2"
+        );
+        expect(response.body.answers[0].comments[1].user.icon_url).toBe(
+          "userIcon2"
+        );
+
+        // コメント3件目
+        expect(response.body.answers[0].comments[2].user.id).toBe("userId1");
+        expect(response.body.answers[0].comments[2].user.username).toBe(
+          "user1"
+        );
+        expect(response.body.answers[0].comments[2].user.icon_url).toBe(
+          "userIcon1"
+        );
       });
     });
     describe("異常系", () => {
@@ -764,16 +845,16 @@ describe("postAPIのテスト", () => {
     });
   });
 
-  describe("DELETE /posts/:postId/remove/category/:categoryId", () => {
+  describe("DELETE /posts/remove/categories のテスト", () => {
     describe("正常系", () => {
       it("投稿からカテゴリーを正常に削除できる", async () => {
         const response = await request(server).delete(
-          "/posts/postId1/remove/category/categoryId1"
+          "/posts/postId1/remove/categories"
         );
         expect(response.statusCode).toBe(200);
 
         const postCategoryData = await db.PostCategory.findAll({
-          where: { postId: "postId1", categoryId: "categoryId1" },
+          where: { postId: "postId1" },
         });
         expect(postCategoryData).toHaveLength(0);
       });

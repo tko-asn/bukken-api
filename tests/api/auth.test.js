@@ -27,11 +27,29 @@ describe("authAPIのテスト", () => {
 
   describe("POST /auth/login のテスト", () => {
     describe("正常系", () => {
-      it("正常にログインできてユーザーのデータが返される", async () => {
+      it("ユーザー名で正常にログインできてユーザーのデータが返される", async () => {
         const response = await request(server)
           .post("/auth/login")
           .send(loginParams);
 
+        expect(response.statusCode).toBe(200);
+        expect(response.body.token).toBeTruthy();
+        expect(response.body.id).toBe(userData.id);
+        expect(response.body.username).toBe(userData.username);
+        expect(response.body.email).toBe(userData.email);
+        expect(response.body.self_introduction).toBe(
+          userData.self_introduction
+        );
+        expect(response.body.icon_url).toBe(userData.icon_url);
+      });
+      it("メールアドレスで正常にログインできてユーザーのデータが返される", async () => {
+        const emailLoginParams = {
+          username: "email1",
+          password: "passwd1",
+        };
+        const response = await request(server)
+          .post("/auth/login")
+          .send(emailLoginParams);
         expect(response.statusCode).toBe(200);
         expect(response.body.token).toBeTruthy();
         expect(response.body.id).toBe(userData.id);

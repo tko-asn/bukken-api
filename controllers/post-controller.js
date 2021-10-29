@@ -2,9 +2,16 @@ const db = require("../models/index");
 const Sequelize = require("sequelize");
 const Op = Sequelize.Op;
 
-const attributes = ["id", "title", "property", "text", "updatedAt"];
+const attributes = [
+  "id",
+  "title",
+  "property",
+  "text",
+  "updatedAt",
+  "createdAt",
+];
 const userAttributes = ["id", "username", "icon_url"];
-const answerAttributes = ["id", "content", "updatedAt"];
+const answerAttributes = ["id", "content", "createdAt", "updatedAt"];
 const addressAttributes = [
   "postalCode",
   "prefecture",
@@ -12,7 +19,8 @@ const addressAttributes = [
   "townName",
   "buildingName",
 ];
-const categoryAttributes = ["firstCategory", "secondCategory"];
+const categoryAttributes = ["id", "firstCategory", "secondCategory"];
+const commentAttributes = ["id", "content", "createdAt", "updatedAt"];
 
 const userAssociation = {
   // 投稿者または回答者
@@ -46,6 +54,13 @@ const favoritePostsAssociation = {
   as: "favoritePosts",
 };
 
+const commentAssociation = {
+  // コメントを取得
+  model: db.comment,
+  attributes: commentAttributes,
+  include: { ...userAssociation },
+};
+
 const perPage = 10; // 1ページ当たりの投稿数
 
 const postController = {
@@ -57,7 +72,7 @@ const postController = {
         offset: (page - 1) * perPage,
         limit: perPage,
         order: [
-          ["updatedAt", "DESC"],
+          ["createdAt", "DESC"],
           [db.category, "updatedAt", "ASC"],
         ],
         attributes,
@@ -85,7 +100,7 @@ const postController = {
         limit: perPage,
         where: { authorId: req.params.userId },
         order: [
-          ["updatedAt", "DESC"],
+          ["createdAt", "DESC"],
           [db.category, "updatedAt", "ASC"],
         ],
         attributes,
@@ -113,7 +128,7 @@ const postController = {
         limit: perPage,
         where: { authorId: req.body.followsId }, // req.body.followsIdはユーザーのidのリスト
         order: [
-          ["updatedAt", "DESC"],
+          ["createdAt", "DESC"],
           [db.category, "updatedAt", "ASC"],
         ],
         attributes,
@@ -149,7 +164,7 @@ const postController = {
           categoryAssociation,
         ],
         order: [
-          ["updatedAt", "DESC"],
+          ["createdAt", "DESC"],
           [db.category, "updatedAt", "ASC"],
         ],
         distinct: true,
@@ -176,14 +191,17 @@ const postController = {
             include: [
               { ...userAssociation }, // 回答者（コピーしたものを使わないとエラー発生）
               likedAnswerAssociation, // いいねしたユーザー
+              commentAssociation, // 回答についたコメント
             ],
           },
           categoryAssociation,
         ],
         order: [
-          [db.answer, "updatedAt", "ASC"],
+          [db.answer, "createdAt", "ASC"],
+          [db.answer, db.comment, "createdAt", "ASC"],
           [db.category, "updatedAt", "ASC"],
         ],
+        subQuery: false, // answerのcommentのため
       })
       .then((result) => {
         if (!result) {
@@ -269,7 +287,6 @@ const postController = {
     db.PostCategory.destroy({
       where: {
         postId: req.params.postId,
-        categoryId: req.params.categoryId,
       },
     })
       .then(() => {
@@ -289,7 +306,7 @@ const postController = {
       offset: (page - 1) * perPage,
       limit: perPage,
       attributes,
-      order: [["updatedAt", "DESC"]],
+      order: [["createdAt", "DESC"]],
       include: [
         userAssociation, // 投稿者
       ],
@@ -352,7 +369,7 @@ const postController = {
       limit: perPage,
       attributes,
       order: [
-        ["updatedAt", "DESC"], // 投稿日時が遅い順
+        ["createdAt", "DESC"], // 投稿日時が遅い順
       ],
       include: [
         userAssociation, // 投稿者
