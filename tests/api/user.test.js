@@ -49,6 +49,7 @@ const answerData = [
     content: "answer1",
     questionId: "postId1",
     respondentId: "userId1",
+    createdAt: new Date(2021, 1, 5, 0, 0, 0),
     updatedAt: new Date(2021, 1, 10, 0, 0, 0),
   },
   {
@@ -56,7 +57,34 @@ const answerData = [
     content: "answer2",
     questionId: "postId2",
     respondentId: "userId1",
+    createdAt: new Date(2021, 2, 5, 0, 0, 0),
     updatedAt: new Date(2021, 2, 10, 0, 0, 0),
+  },
+  {
+    id: "answerId3",
+    content: "answer3",
+    questionId: "postId1",
+    respondentId: "userId2",
+    createdAt: new Date(2021, 3, 5, 0, 0, 0),
+    updatedAt: new Date(2021, 3, 10, 0, 0, 0),
+  },
+  {
+    id: "answerId4",
+    content: "answer4",
+    questionId: "postId2",
+    respondentId: "userId2",
+    createdAt: new Date(2021, 4, 5, 0, 0, 0),
+    updatedAt: new Date(2021, 4, 10, 0, 0, 0),
+  },
+];
+const userAnswerData = [
+  {
+    userId: "userId1",
+    answerId: "answerId3",
+  },
+  {
+    userId: "userId1",
+    answerId: "answerId4",
   },
 ];
 
@@ -65,9 +93,11 @@ describe("userAPIのテスト", () => {
     await db.user.bulkCreate(userData);
     await db.post.bulkCreate(postData);
     await db.answer.bulkCreate(answerData);
+    await db.UserAnswer.bulkCreate(userAnswerData);
   });
 
   afterAll(async () => {
+    await db.UserAnswer.destroy({ where: {} });
     await db.answer.destroy({ where: {} });
     await db.post.destroy({ where: {} });
     await db.user.destroy({ where: {} });
@@ -104,20 +134,28 @@ describe("userAPIのテスト", () => {
         expect(response.body.icon_url).toBe("userIcon1");
       });
       it("ユーザーの回答のデータを一緒に取得できる", async () => {
-        const answer1DateTime = new Date(2021, 1, 10, 0, 0, 0);
-        const answer2DateTime = new Date(2021, 2, 10, 0, 0, 0);
+        const answer1CreatedAt = new Date(2021, 1, 5, 0, 0, 0);
+        const answer2CreatedAt = new Date(2021, 2, 5, 0, 0, 0);
+        const answer1UpdatedAt = new Date(2021, 1, 10, 0, 0, 0);
+        const answer2UpdatedAt = new Date(2021, 2, 10, 0, 0, 0);
         const response = await request(server).get("/users/userId1");
 
         expect(response.body.answers).toHaveLength(2);
         expect(response.body.answers[0].id).toBe(answerData[1].id);
         expect(response.body.answers[0].content).toBe(answerData[1].content);
+        expect(response.body.answers[0].createdAt).toBe(
+          answer2CreatedAt.toISOString()
+        );
         expect(response.body.answers[0].updatedAt).toBe(
-          answer2DateTime.toISOString()
+          answer2UpdatedAt.toISOString()
         );
         expect(response.body.answers[1].id).toBe(answerData[0].id);
         expect(response.body.answers[1].content).toBe(answerData[0].content);
+        expect(response.body.answers[1].createdAt).toBe(
+          answer1CreatedAt.toISOString()
+        );
         expect(response.body.answers[1].updatedAt).toBe(
-          answer1DateTime.toISOString()
+          answer1UpdatedAt.toISOString()
         );
       });
       it("取得した回答のデータから投稿のデータを取得できる", async () => {
@@ -129,6 +167,50 @@ describe("userAPIのテスト", () => {
         expect(response.body.answers[1].post.id).toBe("postId1");
         expect(response.body.answers[1].post.title).toBe("test-post1");
         expect(response.body.answers[1].post.property).toBe("test-property1");
+      });
+      it("いいねした回答の一覧を取得できる", async () => {
+        const response = await request(server).get("/users/userId1");
+
+        const answer3CreatedAt = new Date(2021, 3, 5, 0, 0, 0);
+        const answer4CreatedAt = new Date(2021, 4, 5, 0, 0, 0);
+        const answer3UpdatedAt = new Date(2021, 3, 10, 0, 0, 0);
+        const answer4UpdatedAt = new Date(2021, 4, 10, 0, 0, 0);
+
+        expect(response.body.likedAnswer).toHaveLength(2);
+        expect(response.body.likedAnswer[0].id).toBe(answerData[3].id);
+        expect(response.body.likedAnswer[0].content).toBe(
+          answerData[3].content
+        );
+        expect(response.body.likedAnswer[0].createdAt).toBe(
+          answer4CreatedAt.toISOString()
+        );
+        expect(response.body.likedAnswer[0].updatedAt).toBe(
+          answer4UpdatedAt.toISOString()
+        );
+        expect(response.body.likedAnswer[1].id).toBe(answerData[2].id);
+        expect(response.body.likedAnswer[1].content).toBe(
+          answerData[2].content
+        );
+        expect(response.body.likedAnswer[1].createdAt).toBe(
+          answer3CreatedAt.toISOString()
+        );
+        expect(response.body.likedAnswer[1].updatedAt).toBe(
+          answer3UpdatedAt.toISOString()
+        );
+      });
+      it("いいねした回答のデータから投稿のデータを取得できる", async () => {
+        const response = await request(server).get("/users/userId1");
+
+        expect(response.body.likedAnswer[0].post.id).toBe("postId2");
+        expect(response.body.likedAnswer[0].post.title).toBe("test-post2");
+        expect(response.body.likedAnswer[0].post.property).toBe(
+          "test-property2"
+        );
+        expect(response.body.likedAnswer[1].post.id).toBe("postId1");
+        expect(response.body.likedAnswer[1].post.title).toBe("test-post1");
+        expect(response.body.likedAnswer[1].post.property).toBe(
+          "test-property1"
+        );
       });
     });
     describe("異常系", () => {

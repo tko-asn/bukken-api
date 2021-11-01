@@ -3,7 +3,7 @@ const bcryptjs = require("bcryptjs");
 
 const userAttributes = ["id", "username", "icon_url", "self_introduction"];
 const postAttributes = ["id", "title", "property"];
-const answerAttributes = ["id", "content", "updatedAt"];
+const answerAttributes = ["id", "content", "createdAt", "updatedAt"];
 
 const userController = {
   // ユーザー一覧取得
@@ -25,15 +25,29 @@ const userController = {
     db.user
       .findByPk(req.params.userId, {
         attributes: userAttributes,
-        include: {
-          model: db.answer, // ユーザーの回答一覧
-          attributes: answerAttributes,
-          include: {
-            model: db.post, // 回答の対象となる投稿
-            attributes: postAttributes,
+        include: [
+          {
+            model: db.answer, // ユーザーの回答一覧
+            attributes: answerAttributes,
+            include: {
+              model: db.post, // 回答の対象となる投稿
+              attributes: postAttributes,
+            },
           },
-        },
-        order: [[db.answer, "updatedAt", "DESC"]],
+          {
+            model: db.answer,
+            attriubtes: answerAttributes,
+            as: "likedAnswer",
+            include: {
+              model: db.post,
+              attributes: postAttributes,
+            },
+          },
+        ],
+        order: [
+          [db.answer, "createdAt", "DESC"],
+          ["likedAnswer", "createdAt", "DESC"],
+        ],
       })
       .then((user) => {
         if (!user) {
