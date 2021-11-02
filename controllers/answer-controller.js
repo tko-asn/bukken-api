@@ -1,6 +1,44 @@
 const db = require("../models/index");
 
+const perPage = 10;
+
 const answerController = {
+  // いいねした回答取得
+  getLikedAnswers(req, res, next) {
+    const page = req.params.page;
+    db.answer
+      .findAndCountAll({
+        offset: (page - 1) * perPage,
+        limit: perPage,
+        attributes: ["id", "content", "createdAt"],
+        order: [["createdAt", "DESC"]],
+        include: [
+          {
+            model: db.post,
+            attributes: ["id", "title"],
+          },
+          {
+            model: db.user, // 回答者
+            attributes: ["id", "username", "icon_url"],
+          },
+          {
+            model: db.user,
+            where: {
+              id: req.params.id,
+            },
+            as: "likedBy", // いいねしたユーザーの関係
+          },
+        ],
+        distinct: true,
+      })
+      .then((result) => {
+        const total = result.count > 0 ? Math.ceil(result.count / perPage) : 1; // 総ページ数を取得
+        res.json({ total, answers: result.rows });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  },
   // 回答作成
   async createAnswer(req, res, next) {
     // ユーザーが既に投稿に回答しているか確認
