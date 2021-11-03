@@ -2,6 +2,13 @@ const express = require("express");
 const router = express.Router();
 const answerController = require("../controllers/answer-controller");
 
+// ユーザーの回答を取得
+router.get(
+  "/user/:id/:page",
+  answerController.getUserAnswers,
+  answerController.errorHandling
+);
+
 // いいねした回答を取得
 router.get(
   "/liked/answer/:id/:page",
