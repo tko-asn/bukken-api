@@ -34,19 +34,9 @@ const userController = {
               attributes: postAttributes,
             },
           },
-          {
-            model: db.answer,
-            attriubtes: answerAttributes,
-            as: "likedAnswer",
-            include: {
-              model: db.post,
-              attributes: postAttributes,
-            },
-          },
         ],
         order: [
           [db.answer, "createdAt", "DESC"],
-          ["likedAnswer", "createdAt", "DESC"],
         ],
       })
       .then((user) => {
