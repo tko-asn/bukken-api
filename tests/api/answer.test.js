@@ -71,6 +71,13 @@ const answerData = [
     respondentId: "userId3",
     createdAt: new Date(2021, 1, 20, 0, 0, 0),
   },
+  {
+    id: "answerId3",
+    content: "content3",
+    questionId: "post2",
+    respondentId: "userId2",
+    createdAt: new Date(2021, 1, 30, 0, 0, 0),
+  },
 ];
 
 const userAnswerData = [
@@ -105,7 +112,62 @@ describe("answerAPIのテスト", () => {
     await db.answer.destroy({ where: {} });
   });
 
-  describe("GET /answers/liked/answer/:userId/:page のテスト", () => {
+  describe("GET /answers/user/:id/:page のテスト", () => {
+    describe("正常系", () => {
+      it("ユーザーの回答を正常に取得できる", async () => {
+        const user2Response = await request(server).get(
+          "/answers/user/userId2/1"
+        );
+        const user3Response = await request(server).get(
+          "/answers/user/userId3/1"
+        );
+
+        const answer1CreatedAt = new Date(2021, 1, 10, 0, 0, 0);
+        const answer2CreatedAt = new Date(2021, 1, 20, 0, 0, 0);
+        const answer3CreatedAt = new Date(2021, 1, 30, 0, 0, 0);
+
+        expect(user2Response.statusCode).toBe(200);
+        expect(user3Response.statusCode).toBe(200);
+        expect(user2Response.body.total).toBe(1);
+        expect(user3Response.body.total).toBe(1);
+        expect(user2Response.body.answers).toHaveLength(2);
+        expect(user3Response.body.answers).toHaveLength(1);
+
+        expect(user2Response.body.answers[0].id).toBe("answerId3");
+        expect(user2Response.body.answers[0].content).toBe("content3");
+        expect(user2Response.body.answers[0].createdAt).toBe(
+          answer3CreatedAt.toISOString()
+        );
+        expect(user2Response.body.answers[1].id).toBe("answerId1");
+        expect(user2Response.body.answers[1].content).toBe("content1");
+        expect(user2Response.body.answers[1].createdAt).toBe(
+          answer1CreatedAt.toISOString()
+        );
+        expect(user3Response.body.answers[0].id).toBe("answerId2");
+        expect(user3Response.body.answers[0].content).toBe("content2");
+        expect(user3Response.body.answers[0].createdAt).toBe(
+          answer2CreatedAt.toISOString()
+        );
+      });
+      it("回答から投稿のデータを取得できる", async () => {
+        const response = await request(server).get("/answers/user/userId2/1");
+
+        expect(response.body.answers[0].post.id).toBe("post2");
+        expect(response.body.answers[0].post.title).toBe("title2");
+        expect(response.body.answers[1].post.id).toBe("post1");
+        expect(response.body.answers[1].post.title).toBe("title1");
+      });
+      it("回答から回答者のデータを取得できる", async () => {
+        const response = await request(server).get("/answers/user/userId3/1");
+
+        expect(response.body.answers[0].user.id).toBe("userId3");
+        expect(response.body.answers[0].user.username).toBe("user3");
+        expect(response.body.answers[0].user.icon_url).toBe("userIcon3");
+      });
+    });
+  });
+
+  describe("GET /answers/liked/answer/:id/:page のテスト", () => {
     describe("正常系", () => {
       it("ユーザーがいいねした回答を正常に取得できる", async () => {
         const response = await request(server).get(
