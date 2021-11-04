@@ -1198,4 +1198,19 @@ describe("postAPIのテスト", () => {
       });
     });
   });
+
+  describe("GET /posts/favorite/user/:userId/id/list のテスト", () => {
+    describe("正常系", () => {
+      it("お気に入りの投稿のidのリストを正常に取得できる", async () => {
+        const response = await request(server).get(
+          "/posts/favorite/user/userId2/id/list"
+        );
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toHaveLength(2);
+        expect(response.body[0].id).toBe("postId12");
+        expect(response.body[1].id).toBe("postId11");
+      });
+    });
+  });
 });

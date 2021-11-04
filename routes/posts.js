@@ -23,6 +23,20 @@ router.post(
   postController.errorHandling
 );
 
+// お気に入りの投稿一覧取得
+router.get(
+  "/favorite/user/:userId/page/:page",
+  postController.getFavoritePosts,
+  postController.errorHandling
+);
+
+// お気に入りの投稿のidのリストを取得
+router.get(
+  "/favorite/user/:userId/id/list",
+  postController.getFavoritePostIdList,
+  postController.errorHandling
+);
+
 // 特定の投稿を取得
 router.get(
   "/post/:postId",
@@ -91,11 +105,6 @@ router.get(
   "/search/query/page/:page",
   postController.searchPosts,
   postController.errorHandling
-);
-
-router.get(
-  "/favorite/user/:userId/page/:page",
-  postController.getFavoritePosts
 );
 
 module.exports = router;
