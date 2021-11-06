@@ -177,6 +177,23 @@ const postController = {
         next(err);
       });
   },
+  // お気に入りの投稿のidのリストを取得
+  getFavoritePostIdList(req, res, next) {
+    const fpa = { ...favoritePostsAssociation };
+    fpa.where = { id: req.params.userId };
+    db.post
+      .findAll({
+        include: [fpa],
+        attributes: ["id", "createdAt"],
+        order: [["createdAt", "DESC"]],
+      })
+      .then((result) => {
+        res.json(result);
+      })
+      .catch((err) => {
+        next(err);
+      });
+  },
   // 特定の投稿を取得
   getPost(req, res, next) {
     db.post

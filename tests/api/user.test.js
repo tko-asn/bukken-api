@@ -49,6 +49,7 @@ const answerData = [
     content: "answer1",
     questionId: "postId1",
     respondentId: "userId1",
+    createdAt: new Date(2021, 1, 5, 0, 0, 0),
     updatedAt: new Date(2021, 1, 10, 0, 0, 0),
   },
   {
@@ -56,6 +57,7 @@ const answerData = [
     content: "answer2",
     questionId: "postId2",
     respondentId: "userId1",
+    createdAt: new Date(2021, 2, 5, 0, 0, 0),
     updatedAt: new Date(2021, 2, 10, 0, 0, 0),
   },
 ];
@@ -104,20 +106,28 @@ describe("userAPIのテスト", () => {
         expect(response.body.icon_url).toBe("userIcon1");
       });
       it("ユーザーの回答のデータを一緒に取得できる", async () => {
-        const answer1DateTime = new Date(2021, 1, 10, 0, 0, 0);
-        const answer2DateTime = new Date(2021, 2, 10, 0, 0, 0);
+        const answer1CreatedAt = new Date(2021, 1, 5, 0, 0, 0);
+        const answer2CreatedAt = new Date(2021, 2, 5, 0, 0, 0);
+        const answer1UpdatedAt = new Date(2021, 1, 10, 0, 0, 0);
+        const answer2UpdatedAt = new Date(2021, 2, 10, 0, 0, 0);
         const response = await request(server).get("/users/userId1");
 
         expect(response.body.answers).toHaveLength(2);
         expect(response.body.answers[0].id).toBe(answerData[1].id);
         expect(response.body.answers[0].content).toBe(answerData[1].content);
+        expect(response.body.answers[0].createdAt).toBe(
+          answer2CreatedAt.toISOString()
+        );
         expect(response.body.answers[0].updatedAt).toBe(
-          answer2DateTime.toISOString()
+          answer2UpdatedAt.toISOString()
         );
         expect(response.body.answers[1].id).toBe(answerData[0].id);
         expect(response.body.answers[1].content).toBe(answerData[0].content);
+        expect(response.body.answers[1].createdAt).toBe(
+          answer1CreatedAt.toISOString()
+        );
         expect(response.body.answers[1].updatedAt).toBe(
-          answer1DateTime.toISOString()
+          answer1UpdatedAt.toISOString()
         );
       });
       it("取得した回答のデータから投稿のデータを取得できる", async () => {

@@ -1,6 +1,72 @@
 const db = require("../models/index");
 
+const perPage = 10;
+const attributes = ["id", "content", "createdAt"];
+const postAssociation = {
+  // 投稿
+  model: db.post,
+  attributes: ["id", "title"],
+};
+const respondentAssociation = {
+  // 回答者
+  model: db.user,
+  attributes: ["id", "username", "icon_url"],
+};
+
 const answerController = {
+  // ユーザーの回答取得
+  getUserAnswers(req, res, next) {
+    const ra = { ...respondentAssociation };
+    ra.where = { id: req.params.id };
+    const page = req.params.page;
+
+    db.answer
+      .findAndCountAll({
+        offset: (page - 1) * perPage,
+        limit: perPage,
+        attributes,
+        order: [["createdAt", "DESC"]],
+        include: [ra, postAssociation],
+        distinct: true,
+      })
+      .then((result) => {
+        const total = result.count > 0 ? Math.ceil(result.count / perPage) : 1; // 総ページ数を取得
+        res.json({ total, answers: result.rows });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  },
+  // いいねした回答取得
+  getLikedAnswers(req, res, next) {
+    const page = req.params.page;
+    db.answer
+      .findAndCountAll({
+        offset: (page - 1) * perPage,
+        limit: perPage,
+        attributes,
+        order: [["createdAt", "DESC"]],
+        include: [
+          postAssociation,
+          respondentAssociation,
+          {
+            model: db.user,
+            where: {
+              id: req.params.id,
+            },
+            as: "likedBy", // いいねしたユーザーの関係
+          },
+        ],
+        distinct: true,
+      })
+      .then((result) => {
+        const total = result.count > 0 ? Math.ceil(result.count / perPage) : 1; // 総ページ数を取得
+        res.json({ total, answers: result.rows });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  },
   // 回答作成
   async createAnswer(req, res, next) {
     // ユーザーが既に投稿に回答しているか確認
