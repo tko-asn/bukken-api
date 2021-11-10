@@ -186,16 +186,8 @@ const postCategoryData = [
 const followData = [
   {
     id: "followId1",
-    user: {
-      id: "userId1",
-      username: "user1",
-      icon_url: "userIcon1",
-    },
-    follow: {
-      id: "userId2",
-      username: "user2",
-      icon_url: "userIcon2",
-    },
+    userId: "userId1",
+    followId: "userId2",
   },
 ];
 const answerData = [
