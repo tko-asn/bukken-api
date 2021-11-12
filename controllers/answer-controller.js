@@ -1,7 +1,7 @@
 const db = require("../models/index");
 
 const perPage = 10;
-const attributes = ["id", "content", "createdAt"];
+const attributes = ["id", "content", "evaluation", "createdAt"];
 const postAssociation = {
   // 投稿
   model: db.post,

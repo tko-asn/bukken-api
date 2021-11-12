@@ -59,6 +59,7 @@ const answerData = [
   {
     id: "answerId1",
     content: "answer1",
+    evaluation: 0,
     questionId: "postId1",
     respondentId: "userId1",
     createdAt: new Date(2021, 1, 5, 0, 0, 0),
@@ -67,6 +68,7 @@ const answerData = [
   {
     id: "answerId2",
     content: "answer2",
+    evaluation: 1,
     questionId: "postId2",
     respondentId: "userId1",
     createdAt: new Date(2021, 2, 5, 0, 0, 0),
@@ -239,6 +241,9 @@ describe("userAPIのテスト", () => {
         expect(response.body.answers).toHaveLength(2);
         expect(response.body.answers[0].id).toBe(answerData[1].id);
         expect(response.body.answers[0].content).toBe(answerData[1].content);
+        expect(response.body.answers[0].evaluation).toBe(
+          answerData[1].evaluation
+        );
         expect(response.body.answers[0].createdAt).toBe(
           answer2CreatedAt.toISOString()
         );
@@ -247,6 +252,9 @@ describe("userAPIのテスト", () => {
         );
         expect(response.body.answers[1].id).toBe(answerData[0].id);
         expect(response.body.answers[1].content).toBe(answerData[0].content);
+        expect(response.body.answers[1].evaluation).toBe(
+          answerData[0].evaluation
+        );
         expect(response.body.answers[1].createdAt).toBe(
           answer1CreatedAt.toISOString()
         );

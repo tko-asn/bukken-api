@@ -60,6 +60,7 @@ const answerData = [
   {
     id: "answerId1",
     content: "content1",
+    evaluation: 0,
     questionId: "post1",
     respondentId: "userId2",
     createdAt: new Date(2021, 1, 10, 0, 0, 0),
@@ -67,6 +68,7 @@ const answerData = [
   {
     id: "answerId2",
     content: "content2",
+    evaluation: 1,
     questionId: "post2",
     respondentId: "userId3",
     createdAt: new Date(2021, 1, 20, 0, 0, 0),
@@ -74,6 +76,7 @@ const answerData = [
   {
     id: "answerId3",
     content: "content3",
+    evaluation: 2,
     questionId: "post2",
     respondentId: "userId2",
     createdAt: new Date(2021, 1, 30, 0, 0, 0),
@@ -135,16 +138,19 @@ describe("answerAPIのテスト", () => {
 
         expect(user2Response.body.answers[0].id).toBe("answerId3");
         expect(user2Response.body.answers[0].content).toBe("content3");
+        expect(user2Response.body.answers[0].evaluation).toBe(2);
         expect(user2Response.body.answers[0].createdAt).toBe(
           answer3CreatedAt.toISOString()
         );
         expect(user2Response.body.answers[1].id).toBe("answerId1");
         expect(user2Response.body.answers[1].content).toBe("content1");
+        expect(user2Response.body.answers[1].evaluation).toBe(0);
         expect(user2Response.body.answers[1].createdAt).toBe(
           answer1CreatedAt.toISOString()
         );
         expect(user3Response.body.answers[0].id).toBe("answerId2");
         expect(user3Response.body.answers[0].content).toBe("content2");
+        expect(user3Response.body.answers[0].evaluation).toBe(1);
         expect(user3Response.body.answers[0].createdAt).toBe(
           answer2CreatedAt.toISOString()
         );
@@ -182,11 +188,13 @@ describe("answerAPIのテスト", () => {
         expect(response.body.answers).toHaveLength(2);
         expect(response.body.answers[0].id).toBe("answerId2");
         expect(response.body.answers[0].content).toBe("content2");
+        expect(response.body.answers[0].evaluation).toBe(1);
         expect(response.body.answers[0].createdAt).toBe(
           answer2CreatedAt.toISOString()
         );
         expect(response.body.answers[1].id).toBe("answerId1");
         expect(response.body.answers[1].content).toBe("content1");
+        expect(response.body.answers[1].evaluation).toBe(0);
         expect(response.body.answers[1].createdAt).toBe(
           answer1CreatedAt.toISOString()
         );
@@ -222,6 +230,7 @@ describe("answerAPIのテスト", () => {
         const params = {
           id: "createAnswerId",
           content: "createAnswer",
+          evaluation: 2,
           questionId: "post1",
           respondentId: "userId1",
         };
@@ -236,6 +245,7 @@ describe("answerAPIのテスト", () => {
         expect(answerData).toHaveLength(1);
         expect(answerData[0].id).toBe("createAnswerId");
         expect(answerData[0].content).toBe("createAnswer");
+        expect(answerData[0].evaluation).toBe(2);
         expect(answerData[0].questionId).toBe("post1");
         expect(answerData[0].respondentId).toBe("userId1");
       });
