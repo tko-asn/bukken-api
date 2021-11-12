@@ -3,7 +3,13 @@ const bcryptjs = require("bcryptjs");
 
 const userAttributes = ["id", "username", "icon_url", "self_introduction"];
 const postAttributes = ["id", "title", "property"];
-const answerAttributes = ["id", "content", "createdAt", "updatedAt"];
+const answerAttributes = [
+  "id",
+  "content",
+  "evaluation",
+  "createdAt",
+  "updatedAt",
+];
 
 const perPage = 15;
 
