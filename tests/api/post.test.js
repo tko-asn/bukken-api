@@ -194,6 +194,7 @@ const answerData = [
   {
     id: "answerId1",
     content: "answer1",
+    evaluation: 0,
     questionId: "postId12",
     respondentId: "userId1",
     updatedAt: new Date(2021, 12, 10, 0, 0, 0),
@@ -202,6 +203,7 @@ const answerData = [
   {
     id: "answerId2",
     content: "answer2",
+    evaluation: 1,
     questionId: "postId12",
     respondentId: "userId1",
     updatedAt: new Date(2021, 12, 11, 0, 0, 0),
@@ -598,11 +600,13 @@ describe("postAPIのテスト", () => {
         expect(response.body.answers).toHaveLength(2);
         expect(response.body.answers[0].id).toBe("answerId1");
         expect(response.body.answers[0].content).toBe("answer1");
+        expect(response.body.answers[0].evaluation).toBe(0);
         expect(response.body.answers[0].createdAt).toBe(
           answer1CreatedAt.toISOString()
         );
         expect(response.body.answers[1].id).toBe("answerId2");
         expect(response.body.answers[1].content).toBe("answer2");
+        expect(response.body.answers[1].evaluation).toBe(1);
         expect(response.body.answers[1].createdAt).toBe(
           answer2CreatedAt.toISOString()
         );
