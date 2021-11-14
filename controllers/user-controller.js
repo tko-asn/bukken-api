@@ -3,7 +3,15 @@ const bcryptjs = require("bcryptjs");
 
 const userAttributes = ["id", "username", "icon_url", "self_introduction"];
 const postAttributes = ["id", "title", "property"];
-const answerAttributes = ["id", "content", "createdAt", "updatedAt"];
+const answerAttributes = [
+  "id",
+  "content",
+  "evaluation",
+  "createdAt",
+  "updatedAt",
+];
+
+const perPage = 15;
 
 const userController = {
   // ユーザー一覧取得
@@ -20,6 +28,78 @@ const userController = {
         next(err);
       });
   },
+  // ユーザーのフォローしているユーザーのidのリストを取得
+  async getFollowIdList(req, res, next) {
+    const idList = await getFollowUserIdList(req.params.userId);
+
+    const userIdList = await db.user
+      .findAll({
+        where: {
+          id: idList,
+        },
+        attributes: ["id", "createdAt"],
+        order: [["createdAt", "DESC"]],
+      })
+      .catch((err) => {
+        next(err);
+      });
+    res.json(userIdList);
+  },
+  // ユーザーのフォローしているユーザーのリストを取得
+  async getFollow(req, res, next) {
+    const idList = await getFollowUserIdList(req.params.userId);
+    const page = req.params.page;
+
+    const follows = await db.user
+      .findAndCountAll({
+        offset: (page - 1) * perPage,
+        limit: perPage,
+        where: {
+          id: idList,
+        },
+        attributes: ["id", "username", "icon_url", "createdAt"],
+        order: [["createdAt", "DESC"]],
+      })
+      .catch((err) => {
+        next(err);
+      });
+    const total = follows.count > 0 ? Math.ceil(follows.count / perPage) : 1;
+    res.json({ total, users: follows.rows });
+  },
+  // ユーザーのフォロワーのリストを取得
+  async getFollower(req, res, next) {
+    const userIdList = await db.follow
+      .findAll({
+        where: {
+          followId: req.params.userId,
+        },
+        attributes: ["userId"],
+      })
+      .catch((err) => {
+        next(err);
+      });
+
+    const idList = userIdList.map((item) => item.userId);
+    const page = req.params.page;
+
+    const followers = await db.user
+      .findAndCountAll({
+        offset: (page - 1) * perPage,
+        limit: perPage,
+        where: {
+          id: idList,
+        },
+        attributes: ["id", "username", "icon_url", "createdAt"],
+        order: [["createdAt", "DESC"]],
+      })
+      .catch((err) => {
+        next(err);
+      });
+
+    const total =
+      followers.count > 0 ? Math.ceil(followers.count / perPage) : 1;
+    res.json({ total, users: followers.rows });
+  },
   // ユーザー詳細取得
   getUser(req, res, next) {
     db.user
@@ -35,9 +115,7 @@ const userController = {
             },
           },
         ],
-        order: [
-          [db.answer, "createdAt", "DESC"],
-        ],
+        order: [[db.answer, "createdAt", "DESC"]],
       })
       .then((user) => {
         if (!user) {
@@ -139,6 +217,21 @@ const userController = {
       res.status(500).json({ message: err });
     }
   },
+};
+
+const getFollowUserIdList = async (userId) => {
+  const followIdList = await db.follow
+    .findAll({
+      where: {
+        userId,
+      },
+      attributes: ["followId"],
+    })
+    .catch((err) => {
+      next(err);
+    });
+
+  return followIdList.map((item) => item.followId);
 };
 
 module.exports = userController;

@@ -5,6 +5,23 @@ const upload = require("../services/s3");
 
 // ユーザー一覧取得
 router.get("/", userController.getUsers, userController.errorHandling);
+router.get(
+  "/follow/id/list/:userId",
+  userController.getFollowIdList,
+  userController.errorHandling
+);
+// フォローしたユーザー一覧取得
+router.get(
+  "/follow/:userId/:page",
+  userController.getFollow,
+  userController.errorHandling
+);
+// フォロワー一覧取得
+router.get(
+  "/follower/:userId/:page",
+  userController.getFollower,
+  userController.errorHandling
+);
 // ユーザー詳細取得
 router.get("/:userId", userController.getUser, userController.errorHandling);
 // ユーザー作成

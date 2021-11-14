@@ -11,6 +11,7 @@ const userData = [
     password: "passwd1",
     self_introduction: "selfIntroduction1",
     icon_url: "userIcon1",
+    createdAt: new Date(2021, 1, 1, 0, 0, 0),
     updatedAt: new Date(2021, 1, 1, 0, 0, 0),
   },
   {
@@ -20,7 +21,18 @@ const userData = [
     password: "passwd2",
     self_introduction: "selfIntroduction2",
     icon_url: "userIcon2",
+    createdAt: new Date(2021, 1, 2, 0, 0, 0),
     updatedAt: new Date(2021, 1, 2, 0, 0, 0),
+  },
+  {
+    id: "userId3",
+    username: "user3",
+    email: "email3",
+    password: "passwd3",
+    self_introduction: "selfIntroduction3",
+    icon_url: "userIcon3",
+    createdAt: new Date(2021, 1, 3, 0, 0, 0),
+    updatedAt: new Date(2021, 1, 3, 0, 0, 0),
   },
 ];
 const postData = [
@@ -47,6 +59,7 @@ const answerData = [
   {
     id: "answerId1",
     content: "answer1",
+    evaluation: 0,
     questionId: "postId1",
     respondentId: "userId1",
     createdAt: new Date(2021, 1, 5, 0, 0, 0),
@@ -55,10 +68,28 @@ const answerData = [
   {
     id: "answerId2",
     content: "answer2",
+    evaluation: 1,
     questionId: "postId2",
     respondentId: "userId1",
     createdAt: new Date(2021, 2, 5, 0, 0, 0),
     updatedAt: new Date(2021, 2, 10, 0, 0, 0),
+  },
+];
+const followData = [
+  {
+    id: "followId1",
+    followId: "userId1",
+    userId: "userId2",
+  },
+  {
+    id: "followId2",
+    followId: "userId2",
+    userId: "userId1",
+  },
+  {
+    id: "followId3",
+    followId: "userId3",
+    userId: "userId1",
   },
 ];
 
@@ -67,9 +98,11 @@ describe("userAPIのテスト", () => {
     await db.user.bulkCreate(userData);
     await db.post.bulkCreate(postData);
     await db.answer.bulkCreate(answerData);
+    await db.follow.bulkCreate(followData);
   });
 
   afterAll(async () => {
+    await db.follow.destroy({ where: {} });
     await db.answer.destroy({ where: {} });
     await db.post.destroy({ where: {} });
     await db.user.destroy({ where: {} });
@@ -81,15 +114,108 @@ describe("userAPIのテスト", () => {
         const response = await request(server).get("/users/");
 
         expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveLength(2);
-        expect(response.body[0].id).toBe("userId2");
-        expect(response.body[0].username).toBe("user2");
-        expect(response.body[0].self_introduction).toBe("selfIntroduction2");
-        expect(response.body[0].icon_url).toBe("userIcon2");
-        expect(response.body[1].id).toBe("userId1");
-        expect(response.body[1].username).toBe("user1");
-        expect(response.body[1].self_introduction).toBe("selfIntroduction1");
-        expect(response.body[1].icon_url).toBe("userIcon1");
+        expect(response.body).toHaveLength(3);
+        expect(response.body[0].id).toBe("userId3");
+        expect(response.body[0].username).toBe("user3");
+        expect(response.body[0].self_introduction).toBe("selfIntroduction3");
+        expect(response.body[0].icon_url).toBe("userIcon3");
+        expect(response.body[1].id).toBe("userId2");
+        expect(response.body[1].username).toBe("user2");
+        expect(response.body[1].self_introduction).toBe("selfIntroduction2");
+        expect(response.body[1].icon_url).toBe("userIcon2");
+        expect(response.body[2].id).toBe("userId1");
+        expect(response.body[2].username).toBe("user1");
+        expect(response.body[2].self_introduction).toBe("selfIntroduction1");
+        expect(response.body[2].icon_url).toBe("userIcon1");
+      });
+    });
+  });
+
+  describe("GET /follow/id/list/:userId のテスト", () => {
+    describe("正常系", () => {
+      it("フォローしているユーザーのidのリストを正常に取得できる", async () => {
+        const user1Follows = await request(server).get(
+          "/users/follow/id/list/userId1"
+        );
+        const user2Follows = await request(server).get(
+          "/users/follow/id/list/userId2"
+        );
+
+        expect(user1Follows.statusCode).toBe(200);
+        expect(user1Follows.body).toHaveLength(2);
+        expect(user1Follows.body[0].id).toBe("userId3");
+        expect(user1Follows.body[1].id).toBe("userId2");
+
+        expect(user2Follows.statusCode).toBe(200);
+        expect(user2Follows.body).toHaveLength(1);
+        expect(user2Follows.body[0].id).toBe("userId1");
+      });
+    });
+  });
+
+  describe("GET /follow/:userId/:page のテスト", () => {
+    describe("正常系", () => {
+      it("フォローしているユーザーの一覧データを正常に取得できる", async () => {
+        const user1Follows = await request(server).get(
+          "/users/follow/userId1/1"
+        );
+        const user2Follows = await request(server).get(
+          "/users/follow/userId2/1"
+        );
+
+        expect(user1Follows.statusCode).toBe(200);
+        expect(user1Follows.body.total).toBe(1);
+        expect(user1Follows.body.users).toHaveLength(2);
+        expect(user1Follows.body.users[0].id).toBe("userId3");
+        expect(user1Follows.body.users[0].username).toBe("user3");
+        expect(user1Follows.body.users[0].icon_url).toBe("userIcon3");
+        expect(user1Follows.body.users[1].id).toBe("userId2");
+        expect(user1Follows.body.users[1].username).toBe("user2");
+        expect(user1Follows.body.users[1].icon_url).toBe("userIcon2");
+
+        expect(user2Follows.statusCode).toBe(200);
+        expect(user2Follows.body.total).toBe(1);
+        expect(user2Follows.body.users).toHaveLength(1);
+        expect(user2Follows.body.users[0].id).toBe("userId1");
+        expect(user2Follows.body.users[0].username).toBe("user1");
+        expect(user2Follows.body.users[0].icon_url).toBe("userIcon1");
+      });
+    });
+  });
+
+  describe("GET /follower/:userId/:page のテスト", () => {
+    describe("正常系", () => {
+      it("フォローしているユーザーの一覧データを正常に取得できる", async () => {
+        const user1Followers = await request(server).get(
+          "/users/follower/userId1/1"
+        );
+        const user2Followers = await request(server).get(
+          "/users/follower/userId2/1"
+        );
+        const user3Followers = await request(server).get(
+          "/users/follower/userId3/1"
+        );
+
+        expect(user1Followers.statusCode).toBe(200);
+        expect(user1Followers.body.total).toBe(1);
+        expect(user1Followers.body.users).toHaveLength(1);
+        expect(user1Followers.body.users[0].id).toBe("userId2");
+        expect(user1Followers.body.users[0].username).toBe("user2");
+        expect(user1Followers.body.users[0].icon_url).toBe("userIcon2");
+
+        expect(user2Followers.statusCode).toBe(200);
+        expect(user2Followers.body.total).toBe(1);
+        expect(user2Followers.body.users).toHaveLength(1);
+        expect(user2Followers.body.users[0].id).toBe("userId1");
+        expect(user2Followers.body.users[0].username).toBe("user1");
+        expect(user2Followers.body.users[0].icon_url).toBe("userIcon1");
+
+        expect(user3Followers.statusCode).toBe(200);
+        expect(user3Followers.body.total).toBe(1);
+        expect(user3Followers.body.users).toHaveLength(1);
+        expect(user3Followers.body.users[0].id).toBe("userId1");
+        expect(user3Followers.body.users[0].username).toBe("user1");
+        expect(user3Followers.body.users[0].icon_url).toBe("userIcon1");
       });
     });
   });
@@ -115,6 +241,9 @@ describe("userAPIのテスト", () => {
         expect(response.body.answers).toHaveLength(2);
         expect(response.body.answers[0].id).toBe(answerData[1].id);
         expect(response.body.answers[0].content).toBe(answerData[1].content);
+        expect(response.body.answers[0].evaluation).toBe(
+          answerData[1].evaluation
+        );
         expect(response.body.answers[0].createdAt).toBe(
           answer2CreatedAt.toISOString()
         );
@@ -123,6 +252,9 @@ describe("userAPIのテスト", () => {
         );
         expect(response.body.answers[1].id).toBe(answerData[0].id);
         expect(response.body.answers[1].content).toBe(answerData[0].content);
+        expect(response.body.answers[1].evaluation).toBe(
+          answerData[0].evaluation
+        );
         expect(response.body.answers[1].createdAt).toBe(
           answer1CreatedAt.toISOString()
         );

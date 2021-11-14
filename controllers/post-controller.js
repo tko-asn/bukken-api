@@ -11,7 +11,13 @@ const attributes = [
   "createdAt",
 ];
 const userAttributes = ["id", "username", "icon_url"];
-const answerAttributes = ["id", "content", "createdAt", "updatedAt"];
+const answerAttributes = [
+  "id",
+  "content",
+  "evaluation",
+  "createdAt",
+  "updatedAt",
+];
 const addressAttributes = [
   "postalCode",
   "prefecture",

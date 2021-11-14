@@ -13,6 +13,7 @@ const userData = {
 const answerData = {
   id: "answerId1",
   content: "answer1",
+  evaluation: 1,
   questionId: "postId12",
   respondentId: "authorId1",
   updatedAt: new Date(2021, 12, 10, 0, 0, 0),

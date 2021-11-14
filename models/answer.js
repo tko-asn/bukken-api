@@ -42,6 +42,11 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      evaluation: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
+      },
       questionId: {
         type: DataTypes.UUID,
         allowNull: false,
