@@ -553,6 +553,55 @@ describe("postAPIのテスト", () => {
     });
   });
 
+  describe("GET /posts/favorite/post/ranking/:page", () => {
+    // お気に入りの投稿データを追加
+    beforeAll(async () => {
+      await db.UserPost.bulkCreate([
+        { postId: "postId10", userId: "userId1" },
+        { postId: "postId10", userId: "userId2" },
+      ]);
+    });
+
+    // 追加したデータを削除
+    afterAll(async () => {
+      await db.UserPost.destroy({ where: { postId: "postId10" } });
+    });
+
+    describe("正常系", () => {
+      it("投稿のカラムが正常に取得できている", async () => {
+        const response = await request(server).get(
+          "/posts/favorite/post/ranking/1"
+        );
+
+        expect(response.statusCode).toBe(200);
+        expect(response.body.total).toBe(1);
+        expect(response.body.posts).toHaveLength(3);
+
+        expect(response.body.posts[0].id).toBe(postData[9].id);
+        expect(response.body.posts[0].title).toBe(postData[9].title);
+        expect(response.body.posts[0].property).toBe(postData[9].property);
+        expect(response.body.posts[0].userCount).toBe(2);
+        expect(response.body.posts[0].updatedAt).toBe(
+          postData[9].updatedAt.toISOString()
+        );
+        expect(response.body.posts[1].id).toBe(postData[11].id);
+        expect(response.body.posts[1].title).toBe(postData[11].title);
+        expect(response.body.posts[1].property).toBe(postData[11].property);
+        expect(response.body.posts[1].userCount).toBe(1);
+        expect(response.body.posts[1].updatedAt).toBe(
+          postData[11].updatedAt.toISOString()
+        );
+        expect(response.body.posts[2].id).toBe(postData[10].id);
+        expect(response.body.posts[2].title).toBe(postData[10].title);
+        expect(response.body.posts[2].property).toBe(postData[10].property);
+        expect(response.body.posts[2].userCount).toBe(1);
+        expect(response.body.posts[2].updatedAt).toBe(
+          postData[10].updatedAt.toISOString()
+        );
+      });
+    });
+  });
+
   describe("GET /posts/post/:postId", () => {
     describe("正常系", () => {
       it("投稿のカラムが取得できている", async () => {
