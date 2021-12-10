@@ -200,6 +200,34 @@ const postController = {
         next(err);
       });
   },
+  async getFavoritePostRanking(req, res, next) {
+    const fpa = { ...favoritePostsAssociation };
+    fpa.required = true; // INNER JOIN（OUTER JOINだとユーザー数が正しくカウントされない）
+    const page = req.params.page;
+    const result = await db.post.findAndCountAll({
+      offset: (page - 1) * perPage,
+      limit: perPage,
+      attributes: [
+        "id",
+        "title",
+        "property",
+        // 投稿をお気に入り登録しているユーザーの数をカウント
+        [Sequelize.fn("count", "favoritePosts.id"), "userCount"],
+        "updatedAt",
+      ],
+      include: [fpa],
+      group: ["id"], // 投稿のid
+      order: [
+        [Sequelize.col("userCount"), "DESC"],
+        ["updatedAt", "DESC"],
+      ],
+      distinct: true,
+      subQuery: false, // サブクエリ
+    });
+
+    const total = result.count > 0 ? Math.ceil(result.count / perPage) : 1; // 総ページ数を取得
+    res.json({ total, posts: result.rows });
+  },
   // 特定の投稿を取得
   getPost(req, res, next) {
     db.post
