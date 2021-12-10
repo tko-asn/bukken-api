@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "start": "npx nodemon server",
-    "test": "cross-env NODE_ENV=test npm run db:setup && jest && npm run db:drop",
-    "db:setup": "sequelize db:create && sequelize db:migrate",
+    "test": "npm run db:drop && npm run db:setup && jest $npm_config_pattern",
+    "db:setup": "cross-env NODE_ENV=test sequelize db:create && cross-env NODE_ENV=test sequelize db:migrate",
     "db:drop": "cross-env NODE_ENV=test sequelize db:drop"
   },
   "dependencies": {
