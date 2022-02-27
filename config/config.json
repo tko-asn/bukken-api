@@ -3,14 +3,14 @@
     "username": "dev_admin",
     "password": "dev_admin_pass",
     "database": "yobo_development",
-    "host": "127.0.0.1",
+    "host": "db",
     "dialect": "mysql"
   },
   "test": {
-    "username": "test_admin",
-    "password": "test_admin_pass",
+    "username": "dev_admin",
+    "password": "dev_admin_pass",
     "database": "yobo_test",
-    "host": "127.0.0.1",
+    "host": "db",
     "dialect": "mysql"
   },
   "production": {
