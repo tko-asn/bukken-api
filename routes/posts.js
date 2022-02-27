@@ -37,6 +37,13 @@ router.get(
   postController.errorHandling
 );
 
+// お気に入り登録された投稿のランキングを取得
+router.get(
+  "/favorite/post/ranking/:page",
+  postController.getFavoritePostRanking,
+  postController.errorHandling
+);
+
 // 特定の投稿を取得
 router.get(
   "/post/:postId",
